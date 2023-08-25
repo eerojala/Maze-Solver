@@ -1,7 +1,6 @@
 package com.maze;
 
-import java.util.ArrayList;
-import java.util.Objects;
+import java.util.Arrays;
 
 public class MazeSolver {
     private enum Direction {
@@ -9,31 +8,32 @@ public class MazeSolver {
     }
 
     private Tile[][] maze;
-    private int mazeWidth;
-    private int mazeHeight;
     private boolean[][] traversedPath;
     private boolean[][] endPath;
+    private int mazeWidth;
+    private int mazeHeight;
+    private int stepLimit;
 
-    public char[][] solveMaze(Tile[][] maze) {
+    public char[][] solveMaze(Tile[][] maze, int stepLimit) {
         /*
          * TODO:
          * Make order of x and y consistent
-         * Take limits into account
          * Make solution print more clear
          */
-        initFields(maze);
+        initFields(maze, stepLimit);
         var start = getStartingCoordinates();
-        boolean possible = traverseMaze(start);
+        boolean possible = traverseMaze(start, 0);
 
         return possible ? getSolution() : null;
     }
 
-    private void initFields(Tile[][] maze) {
+    private void initFields(Tile[][] maze, int stepLimit) {
         this.maze = maze;
         mazeWidth = maze[0].length;
         mazeHeight = maze.length;
         traversedPath = new boolean[mazeHeight][mazeWidth]; // booleans are false by default
         endPath = new boolean[mazeHeight][mazeWidth];
+        this.stepLimit = stepLimit;
     }
 
     private Coordinates getStartingCoordinates() {
@@ -48,18 +48,18 @@ public class MazeSolver {
         throw new IllegalArgumentException("Given maze must have a starting point (marked with '^'");
     }
 
-    private boolean traverseMaze(Coordinates current) {
-        int x = current.getX();
-        int y = current.getY();
+    private boolean traverseMaze(Coordinates currentCoordinates, int steps) {
+        int x = currentCoordinates.getX();
+        int y = currentCoordinates.getY();
         Tile currentTile = maze[y][x];
 
-        if (currentTile == Tile.BLOCK || isTileTraversed(current)) {
+        if (!areCurrentCoordinatesTraversable(currentTile, currentCoordinates, steps)) {
             return false;
         }
 
-        markTileAsTraversed(current);
+        markCoordinatesAsTraversed(currentCoordinates);
 
-        if (currentTile == Tile.EXIT || tryAllDirections(current)) {
+        if (foundExit(currentTile, currentCoordinates, steps)) {
             endPath[y][x] = true;
             return true;
         } else {
@@ -67,23 +67,34 @@ public class MazeSolver {
         }
     }
 
-    private boolean isTileTraversed(Coordinates coordinates) {
-        return traversedPath[coordinates.getY()][coordinates.getX()];
+    private boolean areCurrentCoordinatesTraversable(Tile currentTile, Coordinates currentCoordinates, int steps) {
+        boolean currentTileTraversable = currentTile != Tile.BLOCK;
+        boolean currentCoordinatesNotTraversed = !traversedPath[currentCoordinates.getY()][currentCoordinates.getX()];
+        boolean withinStepLimit = steps <= stepLimit;
+
+        return currentTileTraversable && currentCoordinatesNotTraversed && withinStepLimit;
     }
 
-    private boolean tryAllDirections(Coordinates current) {
-        // Try in order of UP, RIGHT, DOWN, LEFT
-        for (Direction d: Direction.values()) {
+    private void markCoordinatesAsTraversed(Coordinates coordinates) {
+        traversedPath[coordinates.getY()][coordinates.getX()] = true;
+    }
+
+    private boolean foundExit(Tile currentTile, Coordinates currentCoordinates, int steps) {
+        boolean atExit = currentTile == Tile.EXIT;
+        boolean foundExitFurther = tryTraverseAllDirections(currentCoordinates, steps);
+
+        return atExit || foundExitFurther;
+    }
+
+    private boolean tryTraverseAllDirections(Coordinates current, int steps) {
+        return Arrays.stream(Direction.values()).anyMatch(d -> {
             if (!isAtEdge(d, current)) {
                 Coordinates next = getNextCoordinates(d, current);
-
-                if (traverseMaze(next)) {
-                    return true;
-                }
+                return traverseMaze(next, steps + 1);
             }
-        }
 
-        return false;
+            return false;
+        });
     }
 
     private boolean isAtEdge(Direction direction, Coordinates coordinates) {
@@ -120,10 +131,6 @@ public class MazeSolver {
             default:
                 throw new IllegalArgumentException("Unknown Direction enum: " + direction);
         }
-    }
-
-    private void markTileAsTraversed(Coordinates coordinates) {
-        traversedPath[coordinates.getY()][coordinates.getX()] = true;
     }
 
     private char[][] getSolution() {

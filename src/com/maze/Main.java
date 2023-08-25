@@ -3,6 +3,7 @@ package com.maze;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -14,11 +15,12 @@ public class Main {
 
                 try {
                     // String filePath = reader.readLine();
-                    var maze = MazeParser.parseMaze("maze2.txt");
+                    var maze = MazeParser.parseMaze("maze1.txt");
                     solveMaze(maze);
                     break;
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
+                    e.printStackTrace();
                 }
             }
         } finally {
@@ -28,17 +30,31 @@ public class Main {
     }
 
     private static void solveMaze(Tile[][] maze) {
-        var solver = new MazeSolver();
-        var solution = solver.solveMaze(maze);
+        var limits = new int[] { 20, 50, 200 };
+        var foundSolution = Arrays.stream(limits)
+                .filter(limit -> solvableWithinLimit(maze, limit))
+                .findFirst();
 
-        if (solution == null) {
-            System.out.println("Maze not solvable");
-        } else {
-            printSolution(solution);
+        if (foundSolution.isEmpty()) {
+            System.out.println("Maze not solvable within 200 steps");
         }
     }
 
-    private static void printSolution(char[][] solution) {
+    private static boolean solvableWithinLimit(Tile[][] maze, int limit) {
+        var solver = new MazeSolver();
+        var solution = solver.solveMaze(maze, limit);
+
+        if (solution != null) {
+            printSolution(solution, limit);
+            return true;
+        }
+
+        return false;
+    }
+
+    private static void printSolution(char[][] solution, int limit) {
+        System.out.println("Maze solvable within " + limit + " steps: ");
+
         for (int y = 0; y < solution.length; y++) {
             for (int x = 0; x < solution[y].length; x++) {
                 System.out.print(solution[y][x]);
