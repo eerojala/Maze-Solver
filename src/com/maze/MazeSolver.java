@@ -3,44 +3,37 @@ package com.maze;
 import java.util.Arrays;
 
 public class MazeSolver {
-    private enum Direction {
-        UP, RIGHT, DOWN, LEFT;
-    }
+    private static final int[] LIMITS = { 20, 150, 200 };
 
     private Tile[][] maze;
-    private boolean[][] traversedPath;
-    private boolean[][] endPath;
+    private boolean[][] triedCoordinates;
+    private char[][] solution;
     private int mazeWidth;
     private int mazeHeight;
     private int stepLimit;
 
     public char[][] solveMaze(Tile[][] maze, int stepLimit) {
-        /*
-         * TODO:
-         * Make order of x and y consistent
-         * Make solution print more clear
-         */
         initFields(maze, stepLimit);
         var start = getStartingCoordinates();
-        boolean possible = traverseMaze(start, 0);
+        boolean possible = traverseMaze(start, Direction.INITIAL, 0) != null;
 
-        return possible ? getSolution() : null;
+        return possible ? solution : null;
     }
 
     private void initFields(Tile[][] maze, int stepLimit) {
         this.maze = maze;
         mazeWidth = maze[0].length;
         mazeHeight = maze.length;
-        traversedPath = new boolean[mazeHeight][mazeWidth]; // booleans are false by default
-        endPath = new boolean[mazeHeight][mazeWidth];
+        triedCoordinates = new boolean[mazeHeight][mazeWidth]; // booleans are false by default
+        solution = new char[mazeHeight][mazeWidth];
         this.stepLimit = stepLimit;
     }
 
     private Coordinates getStartingCoordinates() {
-        for (int i = 0; i < mazeHeight; i++) {
-            for (int j = 0; j < mazeWidth; j++) {
-                if (maze[i][j] == Tile.START) {
-                    return new Coordinates(j, i); // NOTE: j = x and i = y
+        for (int y = 0; y < mazeHeight; y++) {
+            for (int x = 0; x < mazeWidth; x++) {
+                if (maze[y][x] == Tile.START) {
+                    return new Coordinates(y, x);
                 }
             }
         }
@@ -48,58 +41,74 @@ public class MazeSolver {
         throw new IllegalArgumentException("Given maze must have a starting point (marked with '^'");
     }
 
-    private boolean traverseMaze(Coordinates currentCoordinates, int steps) {
-        int x = currentCoordinates.getX();
-        int y = currentCoordinates.getY();
-        Tile currentTile = maze[y][x];
+    private Direction traverseMaze(Coordinates currentCoordinates, Direction currentDirection, int steps) {
+        Tile currentTile = getTileForCoordinates(currentCoordinates);
 
         if (!areCurrentCoordinatesTraversable(currentTile, currentCoordinates, steps)) {
-            return false;
+            return null;
         }
 
-        markCoordinatesAsTraversed(currentCoordinates);
+        markCoordinatesAsTried(currentCoordinates);
+        Direction nextSuccessfulDirection =
+                getSuccessfulDirection(currentTile, currentDirection, currentCoordinates, steps);
 
-        if (foundExit(currentTile, currentCoordinates, steps)) {
-            endPath[y][x] = true;
-            return true;
+        if (nextSuccessfulDirection != null) {
+            markSolutionSymbol(currentCoordinates, currentTile, nextSuccessfulDirection);
+            return currentDirection;
         } else {
-            return false;
+            return null;
         }
+    }
+
+    private Tile getTileForCoordinates(Coordinates coordinates) {
+        return maze[coordinates.getY()][coordinates.getX()];
     }
 
     private boolean areCurrentCoordinatesTraversable(Tile currentTile, Coordinates currentCoordinates, int steps) {
         boolean currentTileTraversable = currentTile != Tile.BLOCK;
-        boolean currentCoordinatesNotTraversed = !traversedPath[currentCoordinates.getY()][currentCoordinates.getX()];
+        boolean currentCoordinatesNotTried = !areCoordinatesTried(currentCoordinates);
         boolean withinStepLimit = steps <= stepLimit;
 
-        return currentTileTraversable && currentCoordinatesNotTraversed && withinStepLimit;
+        return currentTileTraversable && currentCoordinatesNotTried && withinStepLimit;
     }
 
-    private void markCoordinatesAsTraversed(Coordinates coordinates) {
-        traversedPath[coordinates.getY()][coordinates.getX()] = true;
+    private boolean areCoordinatesTried(Coordinates coordinates) {
+        return triedCoordinates[coordinates.getY()][coordinates.getX()];
     }
 
-    private boolean foundExit(Tile currentTile, Coordinates currentCoordinates, int steps) {
+    private void markCoordinatesAsTried(Coordinates coordinates) {
+        triedCoordinates[coordinates.getY()][coordinates.getX()] = true;
+    }
+
+    private Direction getSuccessfulDirection(
+            Tile currentTile,
+            Direction currentDirection,
+            Coordinates currentCoordinates,
+            int steps) {
         boolean atExit = currentTile == Tile.EXIT;
-        boolean foundExitFurther = tryTraverseAllDirections(currentCoordinates, steps);
 
-        return atExit || foundExitFurther;
+        return atExit ? currentDirection : findSuccessfulDirection(currentCoordinates, steps);
     }
 
-    private boolean tryTraverseAllDirections(Coordinates current, int steps) {
-        return Arrays.stream(Direction.values()).anyMatch(d -> {
-            if (!isAtEdge(d, current)) {
-                Coordinates next = getNextCoordinates(d, current);
-                return traverseMaze(next, steps + 1);
-            }
+    private Direction findSuccessfulDirection(Coordinates currentCoordinates, int steps) {
+        return Arrays.stream(Direction.MOVING_DIRECTIONS)
+                .filter(d -> isSuccessfulDirection(d, currentCoordinates, steps))
+                .findFirst()
+                .orElse(null);
+    }
 
-            return false;
-        });
+    private boolean isSuccessfulDirection(Direction direction, Coordinates currentCoordinates, int steps) {
+        if (!isAtEdge(direction, currentCoordinates)) {
+            Coordinates next = getNextCoordinates(direction, currentCoordinates);
+            return traverseMaze(next, direction,steps + 1) != null;
+        }
+
+        return false;
     }
 
     private boolean isAtEdge(Direction direction, Coordinates coordinates) {
-        int x = coordinates.getX();
         int y = coordinates.getY();
+        int x = coordinates.getX();
 
         switch (direction) {
             case UP:
@@ -110,45 +119,33 @@ public class MazeSolver {
                 return y + 1 >= mazeHeight;
             case LEFT:
                 return x - 1 <= 0;
-            default:
-                throw new IllegalArgumentException("Unknown Direction enum: " + direction);
+            default: // INITIAL
+                throw new IllegalArgumentException("Only moving directions allowed");
         }
     }
 
     private Coordinates getNextCoordinates(Direction direction, Coordinates coordinates) {
-        int x = coordinates.getX();
         int y = coordinates.getY();
+        int x = coordinates.getX();
 
         switch (direction) {
             case UP:
-                return new Coordinates(x, y - 1);
+                return new Coordinates(y - 1, x);
             case RIGHT:
-                return new Coordinates(x + 1, y);
+                return new Coordinates(y, x + 1);
             case DOWN:
-                return new Coordinates(x, y + 1);
+                return new Coordinates(y + 1, x);
             case LEFT:
-                return new Coordinates(x - 1, y);
-            default:
-                throw new IllegalArgumentException("Unknown Direction enum: " + direction);
+                return new Coordinates(y,x - 1);
+            default: // INITIAL
+                throw new IllegalArgumentException("Only moving directions allowed");
         }
     }
 
-    private char[][] getSolution() {
-        var solution = new char[mazeHeight][mazeWidth];
-
-        for (int y = 0; y < mazeHeight; y++) {
-            for (int x = 0; x < mazeWidth; x++) {
-                solution[y][x] = getSolutionChar(x, y);
-            }
-        }
-
-        return solution;
-    }
-
-    private char getSolutionChar(int x, int y) {
-        Tile tile = maze[y][x];
-        boolean markableEndPathTile =  endPath[y][x] == true && tile == Tile.SPACE;
-
-        return markableEndPathTile ? 'x' : tile.getSymbol();
+    private void markSolutionSymbol(Coordinates coordinates, Tile currentTile, Direction direction) {
+        char solutionSymbol = currentTile == Tile.SPACE
+                ? direction.getSymbol()
+                : currentTile.getSymbol(); // Blocks cannot traversed so either Start or End
+        solution[coordinates.getY()][coordinates.getX()] = solutionSymbol;
     }
 }

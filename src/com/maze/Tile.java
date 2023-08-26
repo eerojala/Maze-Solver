@@ -12,7 +12,7 @@ public enum Tile {
 
     private final char symbol;
 
-    Tile(char symbol) {
+    private Tile(char symbol) {
         this.symbol = symbol;
     }
 

@@ -6,6 +6,9 @@ import java.util.stream.Collectors;
 
 public class MazeParser {
     public static Tile[][] parseMaze(String filepath) throws IOException {
+        /*
+         * TODO: Refactor TileType -> Tile
+         */
         File file = new File(filepath);
         BufferedReader reader = null;
 

@@ -5,6 +5,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 
+/*
+ * TODO:
+ * Rename symbol -> char
+ * Uncomment UI code and make it loop properly
+ * Make new class MazePrinter
+ */
+
 public class Main {
     public static void main(String[] args) throws IOException {
         var reader = new BufferedReader(new InputStreamReader(System.in));
@@ -15,7 +22,7 @@ public class Main {
 
                 try {
                     // String filePath = reader.readLine();
-                    var maze = MazeParser.parseMaze("maze1.txt");
+                    var maze = MazeParser.parseMaze("maze2.txt");
                     solveMaze(maze);
                     break;
                 } catch (Exception e) {
@@ -45,32 +52,38 @@ public class Main {
         var solution = solver.solveMaze(maze, limit);
 
         if (solution != null) {
-            printSolution(solution, limit);
+            printSolution(maze, solution, limit);
             return true;
         }
 
         return false;
     }
 
-    private static void printSolution(char[][] solution, int limit) {
+    private static void printSolution(Tile[][] maze, char[][] solution, int limit) {
         System.out.println("Maze solvable within " + limit + " steps: ");
 
-        for (int y = 0; y < solution.length; y++) {
-            for (int x = 0; x < solution[y].length; x++) {
-                System.out.print(solution[y][x]);
+        for (int y = 0; y < maze.length; y++) {
+            for (int x = 0; x < maze[y].length; x++) {
+                System.out.print(getSymbolForPrint(maze, solution, y, x));
             }
 
             System.out.println();
         }
     }
 
-    private static void printMaze(Tile[][] maze) {
-        for (int i = 0; i < maze.length; i++) {
-            for (int j = 0; j < maze[i].length; j++) {
-                System.out.print(maze[i][j].getSymbol());
-            }
+    private static char getSymbolForPrint(Tile[][] maze, char[][] solution, int y, int x) {
+        char symbolFromSolution = solution[y][x];
+        char symbolFromMaze = maze[y][x].getSymbol();
 
-            System.out.println();
-        }
+        /**
+         * char arrays are initialized with default values (=null char) and in the solution arrays new values are only
+         * added for the tiles which are part of the solution path.
+         * So to print the entire maze with solution we need to use the original maze to get the chars from tiles which
+         * are not part of the solution.
+         */
+        return symbolFromSolution != '\u0000' // null char
+                ? symbolFromSolution
+                : symbolFromMaze;
+
     }
 }
