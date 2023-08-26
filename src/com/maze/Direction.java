@@ -4,8 +4,7 @@ public enum Direction {
     UP('↑'),
     RIGHT('→'),
     DOWN('↓'),
-    LEFT('←'),
-    INITIAL('?'); // Only used for the initial starting position, not printed
+    LEFT('←');
 
     private final char ch;
 
@@ -16,6 +15,4 @@ public enum Direction {
     public char getChar() {
         return ch;
     }
-
-    public static final Direction[] MOVING_DIRECTIONS = new Direction[] { UP, RIGHT, DOWN, LEFT };
 }

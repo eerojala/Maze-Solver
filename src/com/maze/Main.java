@@ -21,7 +21,7 @@ public class Main {
 
                 try {
                     // String filePath = reader.readLine();
-                    var maze = MazeParser.parseMaze("maze2.txt");
+                    Maze maze = MazeParser.parseMaze("maze2.txt");
                     solveMaze(maze);
                     break;
                 } catch (Exception e) {
@@ -35,8 +35,8 @@ public class Main {
         }
     }
 
-    private static void solveMaze(Tile[][] maze) {
-        var limits = new int[] { 20, 50, 200 };
+    private static void solveMaze(Maze maze) {
+        var limits = new int[] { 20, 150, 200 };
         var foundSolution = Arrays.stream(limits)
                 .filter(limit -> solvableWithinLimit(maze, limit))
                 .findFirst();
@@ -46,33 +46,32 @@ public class Main {
         }
     }
 
-    private static boolean solvableWithinLimit(Tile[][] maze, int limit) {
-        var solver = new MazeSolver();
-        var solution = solver.solveMaze(maze, limit);
+    private static boolean solvableWithinLimit(Maze maze, int limit) {
+        MazeSolver.attemptToSolveMaze(maze, limit);
 
-        if (solution != null) {
-            printSolution(maze, solution, limit);
+        if (maze.isSolved()) {
+            printSolution(maze, limit);
             return true;
         }
 
         return false;
     }
 
-    private static void printSolution(Tile[][] maze, char[][] solution, int limit) {
+    private static void printSolution(Maze maze, int limit) {
         System.out.println("Maze solvable within " + limit + " steps: ");
 
-        for (int y = 0; y < maze.length; y++) {
-            for (int x = 0; x < maze[y].length; x++) {
-                System.out.print(getCharForPrint(maze, solution, y, x));
+        for (int y = 0; y < maze.getHeight(); y++) {
+            for (int x = 0; x < maze.getWidth(); x++) {
+                System.out.print(getCharForPrint(maze, new Coordinates(y, x)));
             }
 
             System.out.println();
         }
     }
 
-    private static char getCharForPrint(Tile[][] maze, char[][] solution, int y, int x) {
-        char charFromSolution = solution[y][x];
-        char charFromMaze = maze[y][x].getCh();
+    private static char getCharForPrint(Maze maze, Coordinates coordinates) {
+        char charFromSolution = maze.getSolutionCharFromCoordinates(coordinates);
+        char charFromMaze = maze.getTileForCoordinates(coordinates).getChar();
 
         /**
          * char arrays are initialized with default values (=null char) and in the solution arrays new values are only

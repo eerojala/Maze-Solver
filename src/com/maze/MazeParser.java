@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class MazeParser {
-    public static Tile[][] parseMaze(String filepath) throws IOException {
+    public static Maze parseMaze(String filepath) throws IOException {
         File file = new File(filepath);
         BufferedReader reader = null;
 
@@ -32,7 +32,7 @@ public class MazeParser {
                 .collect(Collectors.toList());
     }
 
-    private static Tile[][] createMaze(List<List<Tile>> tilesPerLine) {
+    private static Maze createMaze(List<List<Tile>> tilesPerLine) {
         if (tilesPerLine.isEmpty()) {
             throw new IllegalArgumentException("Given file cannot be empty");
         }
@@ -43,9 +43,7 @@ public class MazeParser {
             throw new IllegalArgumentException("Given file must have rows of equal length");
         }
 
-        return tilesPerLine.stream()
-                .map(line -> line.toArray(new Tile[line.size()])) // Convert a nested list to Array
-                .toArray(Tile[][]::new);
+        return new Maze(createTileMatrix(tilesPerLine));
     }
 
     private static boolean allRowsSameLength(List<List<Tile>> rows, int length) {
@@ -56,5 +54,11 @@ public class MazeParser {
         if (reader != null) {
             reader.close();
         }
+    }
+
+    private static Tile[][] createTileMatrix(List<List<Tile>> tilesPerLine) {
+        return tilesPerLine.stream()
+                .map(line -> line.toArray(new Tile[line.size()])) // Convert a nested list to Array
+                .toArray(Tile[][]::new);
     }
 }

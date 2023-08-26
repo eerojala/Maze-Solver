@@ -16,7 +16,7 @@ public enum Tile {
         this.ch = ch;
     }
 
-    public char getCh() {
+    public char getChar() {
         return ch;
     }
 
@@ -30,7 +30,7 @@ public enum Tile {
      */
     public static Tile parseTile(char ch) {
         return Arrays.stream(Tile.values())
-                .filter(type -> type.getCh() == ch)
+                .filter(type -> type.getChar() == ch)
                 .findAny()
                 .orElseThrow(() -> createNoSuchElementException(ch));
     }
