@@ -1,4 +1,4 @@
-package com.maze;
+package com.maze.domain;
 
 public class Maze {
     // Immutable structure related fields

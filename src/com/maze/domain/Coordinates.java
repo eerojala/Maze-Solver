@@ -1,4 +1,4 @@
-package com.maze;
+package com.maze.domain;
 
 /**
  * Wrapper for coordinates so don't have to use verbose AbstractMap.SimpleEntry.

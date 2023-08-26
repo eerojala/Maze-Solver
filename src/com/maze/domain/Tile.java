@@ -1,4 +1,4 @@
-package com.maze;
+package com.maze.domain;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;

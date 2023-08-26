@@ -1,13 +1,26 @@
-package com.maze;
+package com.maze.util;
+
+import com.maze.domain.Coordinates;
+import com.maze.domain.Direction;
+import com.maze.domain.Maze;
+import com.maze.domain.Tile;
 
 import java.util.Arrays;
 
 public class MazeSolver {
     private static final int[] LIMITS = { 20, 150, 200 };
 
-    public static void attemptToSolveMaze(Maze maze, int stepLimit) {
-        maze.resetProgress(stepLimit);
-        traverseMaze(maze);
+    private MazeSolver() {
+        // Private empty constructor for static method class
+    }
+
+    public static void attemptToSolveMaze(Maze maze) {
+        Arrays.stream(LIMITS).filter(limit -> {
+            maze.resetProgress(limit);
+            traverseMaze(maze);
+
+            return maze.isSolved();
+        }).findFirst();
     }
 
     private static Direction traverseMaze(Maze maze) {
@@ -110,7 +123,7 @@ public class MazeSolver {
 
     private static void setSolved(Maze maze) {
         maze.setSolved(true);
-        maze.setSolutionStepCount(maze.getCurrentStepCount());
+        maze.setSolutionStepCount(maze.getCurrentStepCount()); // Stepping into exit is counted
     }
 
     private static void updateSolution(Maze maze, Direction direction) {

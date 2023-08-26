@@ -1,10 +1,17 @@
-package com.maze;
+package com.maze.util;
+
+import com.maze.domain.Maze;
+import com.maze.domain.Tile;
 
 import java.io.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class MazeParser {
+    private MazeParser() {
+        // Empty private constructor for static method class
+    }
+
     public static Maze parseMaze(String filepath) throws IOException {
         File file = new File(filepath);
         BufferedReader reader = null;
