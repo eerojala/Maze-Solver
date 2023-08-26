@@ -53,7 +53,7 @@ public class MazeSolver {
                 getSuccessfulDirection(currentTile, currentDirection, currentCoordinates, steps);
 
         if (nextSuccessfulDirection != null) {
-            markSolutionSymbol(currentCoordinates, currentTile, nextSuccessfulDirection);
+            markSolutionChar(currentCoordinates, currentTile, nextSuccessfulDirection);
             return currentDirection;
         } else {
             return null;
@@ -142,10 +142,10 @@ public class MazeSolver {
         }
     }
 
-    private void markSolutionSymbol(Coordinates coordinates, Tile currentTile, Direction direction) {
-        char solutionSymbol = currentTile == Tile.SPACE
-                ? direction.getSymbol()
-                : currentTile.getSymbol(); // Blocks cannot traversed so either Start or End
-        solution[coordinates.getY()][coordinates.getX()] = solutionSymbol;
+    private void markSolutionChar(Coordinates coordinates, Tile currentTile, Direction direction) {
+        char solutionChar = currentTile == Tile.SPACE
+                ? direction.getChar()
+                : currentTile.getCh(); // Blocks cannot traversed so either Start or End
+        solution[coordinates.getY()][coordinates.getX()] = solutionChar;
     }
 }

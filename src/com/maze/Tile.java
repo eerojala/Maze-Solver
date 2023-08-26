@@ -10,14 +10,14 @@ public enum Tile {
     EXIT('E'),
     START('^');
 
-    private final char symbol;
+    private final char ch;
 
-    private Tile(char symbol) {
-        this.symbol = symbol;
+    private Tile(char ch) {
+        this.ch = ch;
     }
 
-    public char getSymbol() {
-        return symbol;
+    public char getCh() {
+        return ch;
     }
 
     /**
@@ -26,19 +26,19 @@ public enum Tile {
      * If the given char is not any of these characters, then method will throw NoSuchElementException
      *
      * @param ch char to be parsed
-     * @return TileType parsed from symbol
+     * @return TileType parsed from char
      */
-    public static Tile parseTileType(char ch) {
+    public static Tile parseTile(char ch) {
         return Arrays.stream(Tile.values())
-                .filter(type -> type.getSymbol() == ch)
+                .filter(type -> type.getCh() == ch)
                 .findAny()
                 .orElseThrow(() -> createNoSuchElementException(ch));
     }
 
-    private static NoSuchElementException createNoSuchElementException(char symbol) {
+    private static NoSuchElementException createNoSuchElementException(char ch) {
         String firstPart = "Could not parse character ";
         String latterPart = " into a TileType. Please make sure the file contains only characters '#', ' ', 'E' or '^'";
 ;
-        return new NoSuchElementException(firstPart + symbol + latterPart);
+        return new NoSuchElementException(firstPart + ch + latterPart);
     }
 }

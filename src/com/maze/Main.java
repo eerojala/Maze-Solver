@@ -7,7 +7,6 @@ import java.util.Arrays;
 
 /*
  * TODO:
- * Rename symbol -> char
  * Uncomment UI code and make it loop properly
  * Make new class MazePrinter
  */
@@ -64,16 +63,16 @@ public class Main {
 
         for (int y = 0; y < maze.length; y++) {
             for (int x = 0; x < maze[y].length; x++) {
-                System.out.print(getSymbolForPrint(maze, solution, y, x));
+                System.out.print(getCharForPrint(maze, solution, y, x));
             }
 
             System.out.println();
         }
     }
 
-    private static char getSymbolForPrint(Tile[][] maze, char[][] solution, int y, int x) {
-        char symbolFromSolution = solution[y][x];
-        char symbolFromMaze = maze[y][x].getSymbol();
+    private static char getCharForPrint(Tile[][] maze, char[][] solution, int y, int x) {
+        char charFromSolution = solution[y][x];
+        char charFromMaze = maze[y][x].getCh();
 
         /**
          * char arrays are initialized with default values (=null char) and in the solution arrays new values are only
@@ -81,9 +80,9 @@ public class Main {
          * So to print the entire maze with solution we need to use the original maze to get the chars from tiles which
          * are not part of the solution.
          */
-        return symbolFromSolution != '\u0000' // null char
-                ? symbolFromSolution
-                : symbolFromMaze;
+        return charFromSolution != '\u0000' // null char
+                ? charFromSolution
+                : charFromMaze;
 
     }
 }

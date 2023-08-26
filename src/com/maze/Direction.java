@@ -7,14 +7,14 @@ public enum Direction {
     LEFT('←'),
     INITIAL('?'); // Only used for the initial starting position, not printed
 
-    private final char symbol;
+    private final char ch;
 
-    private Direction(char symbol) {
-        this.symbol = symbol;
+    private Direction(char ch) {
+        this.ch = ch;
     }
 
-    public char getSymbol() {
-        return symbol;
+    public char getChar() {
+        return ch;
     }
 
     public static final Direction[] MOVING_DIRECTIONS = new Direction[] { UP, RIGHT, DOWN, LEFT };

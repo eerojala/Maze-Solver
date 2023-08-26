@@ -6,17 +6,14 @@ import java.util.stream.Collectors;
 
 public class MazeParser {
     public static Tile[][] parseMaze(String filepath) throws IOException {
-        /*
-         * TODO: Refactor TileType -> Tile
-         */
         File file = new File(filepath);
         BufferedReader reader = null;
 
         try {
             reader = new BufferedReader(new FileReader(file));
-            var tileTypesPerLine = parseTilesFromFile(reader);
+            var tilesPerLine = parseTilesFromFile(reader);
 
-            return createMaze(tileTypesPerLine);
+            return createMaze(tilesPerLine);
         } finally {
             // Throws IOException if closing fails
             closeBufferedReader(reader);
@@ -31,22 +28,22 @@ public class MazeParser {
         return line.chars()
                 // chars() is actually an IntStream so need to convert the integers to characters
                 .mapToObj(i -> Character.valueOf((char) i))
-                .map(Tile::parseTileType)
+                .map(Tile::parseTile)
                 .collect(Collectors.toList());
     }
 
-    private static Tile[][] createMaze(List<List<Tile>> tileTypesPerLine) {
-        if (tileTypesPerLine.isEmpty()) {
+    private static Tile[][] createMaze(List<List<Tile>> tilesPerLine) {
+        if (tilesPerLine.isEmpty()) {
             throw new IllegalArgumentException("Given file cannot be empty");
         }
 
-        int width = tileTypesPerLine.get(0).size();
+        int width = tilesPerLine.get(0).size();
 
-        if (!allRowsSameLength(tileTypesPerLine, width)) {
+        if (!allRowsSameLength(tilesPerLine, width)) {
             throw new IllegalArgumentException("Given file must have rows of equal length");
         }
 
-        return tileTypesPerLine.stream()
+        return tilesPerLine.stream()
                 .map(line -> line.toArray(new Tile[line.size()])) // Convert a nested list to Array
                 .toArray(Tile[][]::new);
     }
