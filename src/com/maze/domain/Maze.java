@@ -24,7 +24,7 @@ public class Maze {
         height = maze.length;
         width = maze[0].length;
         startingCoordinates = findStartingCoordinates();
-        resetProgress(0);
+        resetProgress(0); // Method (re-)initializes other fields
     }
 
     private Coordinates findStartingCoordinates() {
@@ -103,10 +103,6 @@ public class Maze {
 
     // Basic getters and setters for fields
 
-    public Tile[][] getMaze() {
-        return maze;
-    }
-
     public int getHeight() {
         return height;
     }
@@ -115,56 +111,20 @@ public class Maze {
         return width;
     }
 
-    public Coordinates getStartingCoordinates() {
-        return startingCoordinates;
-    }
-
-    public boolean[][] getTriedCoordinates() {
-        return triedCoordinates;
-    }
-
-    public void setTriedCoordinates(boolean[][] triedCoordinates) {
-        this.triedCoordinates = triedCoordinates;
-    }
-
     public int getStepLimit() {
         return stepLimit;
-    }
-
-    public void setStepLimit(int stepLimit) {
-        this.stepLimit = stepLimit;
     }
 
     public int getCurrentStepCount() {
         return currentStepCount;
     }
 
-    public void setCurrentStepCount(int currentStepCount) {
-        this.currentStepCount = currentStepCount;
-    }
-
     public Coordinates getCurrentCoordinates() {
         return currentCoordinates;
     }
 
-    public void setCurrentCoordinates(Coordinates currentCoordinates) {
-        this.currentCoordinates = currentCoordinates;
-    }
-
     public Direction getCurrentDirection() {
         return currentDirection;
-    }
-
-    public void setCurrentDirection(Direction currentDirection) {
-        this.currentDirection = currentDirection;
-    }
-
-    public char[][] getSolution() {
-        return solution;
-    }
-
-    public void setSolution(char[][] solution) {
-        this.solution = solution;
     }
 
     public int getSolutionStepCount() {

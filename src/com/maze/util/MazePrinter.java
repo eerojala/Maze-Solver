@@ -32,8 +32,8 @@ public class MazePrinter {
         char charFromSolution = maze.getSolutionCharFromCoordinates(coordinates);
         char charFromMaze = maze.getTileForCoordinates(coordinates).getChar();
 
-        /**
-         * char arrays are initialized with default values (=null char) and in the solution arrays new values are only
+        /*
+         * char arrays are initialized with default values (=null char) and in the solution array new values are only
          * added for the tiles which are part of the solution path.
          * So to print the entire maze with solution we need to use the original maze to get the chars from tiles which
          * are not part of the solution.

@@ -15,12 +15,14 @@ public class MazeSolver {
     }
 
     public static void attemptToSolveMaze(Maze maze) {
-        Arrays.stream(LIMITS).filter(limit -> {
+        for (int limit : LIMITS) {
             maze.resetProgress(limit);
             traverseMaze(maze);
 
-            return maze.isSolved();
-        }).findFirst();
+            if (maze.isSolved()) {
+                break;
+            }
+        }
     }
 
     private static Direction traverseMaze(Maze maze) {
@@ -76,7 +78,7 @@ public class MazeSolver {
             maze.updatePositionFields(nextCoordinates, nextDirection, previousStepCount + 1);
             boolean nextDirectionSuccessful = traverseMaze(maze) != null;
 
-            // Traverse back to previous position after trying direction
+            // Traverse back to original position after trying direction
             maze.updatePositionFields(previousCoordinates, previousDirection, previousStepCount);
 
             return nextDirectionSuccessful;
@@ -98,7 +100,7 @@ public class MazeSolver {
                 return y + 1 >= maze.getHeight();
             case LEFT:
                 return x - 1 <= 0;
-            default: // INITIAL
+            default:
                 throw new IllegalArgumentException("Unknown Direction enum: " + direction);
         }
     }
@@ -116,7 +118,7 @@ public class MazeSolver {
                 return new Coordinates(y + 1, x);
             case LEFT:
                 return new Coordinates(y,x - 1);
-            default: // INITIAL
+            default:
                 throw new IllegalArgumentException("Unknown Direction enum: " + direction);
         }
     }

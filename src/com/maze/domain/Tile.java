@@ -12,7 +12,7 @@ public enum Tile {
 
     private final char ch;
 
-    private Tile(char ch) {
+    Tile(char ch) {
         this.ch = ch;
     }
 
@@ -37,8 +37,8 @@ public enum Tile {
 
     private static NoSuchElementException createNoSuchElementException(char ch) {
         String firstPart = "Could not parse character ";
-        String latterPart = " into a TileType. Please make sure the file contains only characters '#', ' ', 'E' or '^'";
-;
+        String latterPart = " into a Tile. Please make sure the file contains only characters '#', ' ', 'E' or '^'";
+
         return new NoSuchElementException(firstPart + ch + latterPart);
     }
 }

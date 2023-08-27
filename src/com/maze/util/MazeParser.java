@@ -33,9 +33,8 @@ public class MazeParser {
 
     private static List<Tile> parseTilesFromLine(String line) {
         return line.chars()
-                // chars() is actually an IntStream so need to convert the integers to characters
-                .mapToObj(i -> Character.valueOf((char) i))
-                .map(Tile::parseTile)
+                // chars() is actually an IntStream despite the name
+                .mapToObj(i -> Tile.parseTile((char) i))
                 .collect(Collectors.toList());
     }
 
@@ -65,7 +64,7 @@ public class MazeParser {
 
     private static Tile[][] createTileMatrix(List<List<Tile>> tilesPerLine) {
         return tilesPerLine.stream()
-                .map(line -> line.toArray(new Tile[line.size()])) // Convert a nested list to Array
+                .map(line -> line.toArray(new Tile[0])) // Convert a nested list to Array
                 .toArray(Tile[][]::new);
     }
 }

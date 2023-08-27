@@ -8,7 +8,7 @@ public enum Direction {
 
     private final char ch;
 
-    private Direction(char ch) {
+    Direction(char ch) {
         this.ch = ch;
     }
 
