@@ -13,7 +13,10 @@ public class MazeParser {
     }
 
     /**
-     * Creates a maze from parsing individual tiles from a file found from the given filepath
+     * Creates a maze from parsing individual tiles from a file found from the given filepath.
+     *
+     * Should never be null, if parsing fails will throw an Exception.
+     *
      * @param filepath not null
      * @return
      * @throws Exception caused by parsing the file, closing the file reader or the maze being in an invalid format
