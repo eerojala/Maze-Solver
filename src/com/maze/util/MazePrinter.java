@@ -18,6 +18,13 @@ public class MazePrinter {
         // Empty private constructor for static method class
     }
 
+    /**
+     * Prints the results of the maze solving.
+     * If the maze was solvable then prints an ASCII graphic of the solution on the console.
+     * If the maze was not solvable then prints a message stating such.
+     *
+     * @param maze not null
+     */
     public static void printSolution(Maze maze) {
         if (maze == null) {
             throw new IllegalArgumentException("Printable maze cannot be null");
@@ -37,14 +44,21 @@ public class MazePrinter {
     private static void printMaze(Maze maze) {
         for (int y = 0; y < maze.getHeight(); y++) {
             for (int x = 0; x < maze.getWidth(); x++) {
-                printChar(maze, new Coordinates(y, x));
+                printCharAtCoordinates(maze, new Coordinates(y, x));
             }
 
             System.out.println();
         }
     }
 
-    private static void printChar(Maze maze, Coordinates coordinates) {
+    /**
+     * Prints an individual char for the given coordinates on the solution print.
+     * If the given coordinates were a part of the solution the prints the char in a Cyan coluor.
+     * If the given coordinates were NOT a part of the solution then prints the color in the console's default colour.
+     * @param maze
+     * @param coordinates
+     */
+    private static void printCharAtCoordinates(Maze maze, Coordinates coordinates) {
         char charFromSolution = maze.getSolutionCharFromCoordinates(coordinates);
         char charFromMaze = maze.getTileForCoordinates(coordinates).getChar();
 
@@ -56,8 +70,11 @@ public class MazePrinter {
          */
         boolean coordinatesPartOfSolution = charFromSolution != '\u0000'; // null char
         char printedChar = coordinatesPartOfSolution ? charFromSolution : charFromMaze;
-        String colorPrefix = coordinatesPartOfSolution ? ANSI_CYAN : "";
+        String charString = coordinatesPartOfSolution ? colourCharInCyan(printedChar) : "" + printedChar;
+        System.out.print(charString);
+    }
 
-        System.out.print(colorPrefix + printedChar + ANSI_RESET);
+    private static String colourCharInCyan(char printedChar) {
+        return ANSI_CYAN + printedChar + ANSI_RESET; // need to reset color back to default after the char
     }
 }

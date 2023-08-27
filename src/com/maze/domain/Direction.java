@@ -17,10 +17,26 @@ public enum Direction {
         this.xAppend = xAppend;
     }
 
+    /**
+     * Returns a char representation of the Direction.
+     * UP = '↑'
+     * RIGHT = '→'
+     * DOWN = '↓'
+     * LEFT = '←'
+     * INITIAL = '?'
+     * @return
+     */
     public char getChar() {
         return ch;
     }
 
+    /**
+     * Returns coordinates next to the given coordinates from the given direction, e.g. if direction is UP, then returns
+     * coordinates which are above.
+     * @param direction not null or INITIAL
+     * @param coordinates not null
+     * @return
+     */
     public static Coordinates getNextCoordinates(Direction direction, Coordinates coordinates) {
         if (direction == null || direction == Direction.INITIAL) {
             throw new IllegalArgumentException("Cannot give next coordinates for null or INITIAL direction");
@@ -35,5 +51,9 @@ public enum Direction {
 
         return new Coordinates(y, x);
     }
+
+    /**
+     * Returns all moving Directions, i.e. every Direction except INITIAL
+     */
     public static final Direction[] MOVING_DIRECTIONS = new Direction[] { UP, RIGHT, DOWN, LEFT };
 }
