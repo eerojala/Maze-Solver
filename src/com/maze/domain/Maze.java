@@ -24,7 +24,7 @@ public class Maze {
         height = maze.length;
         width = maze[0].length;
         startingCoordinates = findStartingCoordinates();
-        resetProgress(0); // Method (re-)initializes other fields
+        resetProgress(0); // Method called to prevent null pointers
     }
 
     private Coordinates findStartingCoordinates() {

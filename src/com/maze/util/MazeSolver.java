@@ -15,6 +15,10 @@ public class MazeSolver {
     }
 
     public static void attemptToSolveMaze(Maze maze) {
+        if (maze == null) {
+            throw new IllegalArgumentException("Solvable maze cannot be null");
+        }
+
         for (int limit : LIMITS) {
             maze.resetProgress(limit);
             traverseMaze(maze);
@@ -101,26 +105,12 @@ public class MazeSolver {
             case LEFT:
                 return x - 1 <= 0;
             default:
-                throw new IllegalArgumentException("Unknown Direction enum: " + direction);
+                throw new IllegalArgumentException("Unknown/null Direction enum: " + direction);
         }
     }
 
     private static Coordinates getNextCoordinates(Maze maze, Direction direction) {
-        int y = maze.getCurrentYCoordinate();
-        int x = maze.getCurrentXCoordinate();
-
-        switch (direction) {
-            case UP:
-                return new Coordinates(y - 1, x);
-            case RIGHT:
-                return new Coordinates(y, x + 1);
-            case DOWN:
-                return new Coordinates(y + 1, x);
-            case LEFT:
-                return new Coordinates(y,x - 1);
-            default:
-                throw new IllegalArgumentException("Unknown Direction enum: " + direction);
-        }
+        return direction.getNextCoordinates(maze.getCurrentCoordinates());
     }
 
     private static void setSolved(Maze maze) {

@@ -9,6 +9,10 @@ public class MazePrinter {
     }
 
     public static void printSolution(Maze maze) {
+        if (maze == null) {
+            throw new IllegalArgumentException("Printable maze cannot be null");
+        }
+
         if (maze.isSolved()) {
             System.out.println("Maze solvable within " + maze.getStepLimit() + " steps");
             System.out.println("Solution with " + maze.getSolutionStepCount() + " steps:");

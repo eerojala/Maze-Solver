@@ -13,6 +13,10 @@ public class MazeParser {
     }
 
     public static Maze parseMaze(String filepath) throws IOException {
+        if (filepath == null) {
+            throw new IllegalArgumentException("Given filepath cannot be null");
+        }
+
         File file = new File(filepath);
         BufferedReader reader = null;
 
