@@ -2,8 +2,8 @@ package com.maze.main;
 
 import com.maze.domain.Maze;
 import com.maze.util.MazeParser;
-import com.maze.util.MazePrinter;
 import com.maze.util.MazeSolver;
+import com.maze.util.SolutionWriter;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -27,17 +27,8 @@ public class UI {
             reader.close();
         } catch (Exception e) {
             // Error attempting to close reader
-            printError(e);
+            e.printStackTrace();
         }
-    }
-
-    /**
-     * Prints the error message and stack trace into the console
-     * @param e
-     */
-    private static void printError(Exception e) {
-        System.out.println(e.getMessage());
-        e.printStackTrace();
     }
 
     /**
@@ -47,7 +38,9 @@ public class UI {
      * 3. If user inputted 'x' then exit the loop
      * 4. If the user inputted something else, then attempt to parse a file based on the filename user inputted
      * 5. If parsing was successful then attempt to solve the maze
-     * 6. Start back at step 1, even if errors occured during any of the previous steps
+     * 6. Print the solving results into console
+     * 7. If the solving was successful then also write the solution into a text file
+     * 8. Start back at step 1, even if errors occured during any of the previous steps
      * @param reader
      */
     private static void loopProgramUntilExit(BufferedReader reader) {
@@ -62,9 +55,11 @@ public class UI {
 
                 Maze maze = MazeParser.parseMaze(input);
                 MazeSolver.attemptToSolveMaze(maze);
-                MazePrinter.printSolution(maze);
+                String solutionGraphic = SolutionWriter.createSolutionAscii(maze);
+                printSolution(maze, solutionGraphic);
+                writeSolutionIntoFile(solutionGraphic);
             } catch (Exception e) {
-                printError(e);
+                e.printStackTrace();
             }
         }
     }
@@ -83,6 +78,48 @@ public class UI {
      */
     private static boolean isExitCommand(String input) {
         return input != null && Objects.equals("x", input.toLowerCase());
+    }
+
+    /**
+     * Prints given solution graphic + information about amount of steps required for the solution into the console.
+     *
+     * If maze is unsolved and/or soltion graphic is null then prints message stating that the maze was not solvable.
+     *
+     * @param maze not null
+     * @param solutionGraphic
+     */
+    private static void printSolution(Maze maze, String solutionGraphic)  {
+        if (maze == null) {
+            throw new IllegalArgumentException("Maze must not be null in order for the solution to be printed");
+        }
+
+        int stepLimit = maze.getStepLimit();
+
+        if (maze.isSolved() && solutionGraphic != null) {
+            System.out.println("Maze was solvable within " + stepLimit + " steps");
+            System.out.println("Solution with " + maze.getSolutionStepCount() + " steps:");
+            System.out.println(solutionGraphic);
+        } else {
+            System.out.println("Maze was not solvable within " + stepLimit);
+        }
+
+    }
+
+    /**
+     * Writes the given solution graphic (if not null) into a text file.
+     * If the file writing operation was successful then also prints the filename into the console.
+     *
+     * @param solutionGraphic
+     * @throws Exception
+     */
+    private static void writeSolutionIntoFile(String solutionGraphic) throws Exception {
+        if (solutionGraphic != null) {
+            String filename = SolutionWriter.writeSolutionGraphicIntoTextFile(solutionGraphic);
+
+            if (filename != null) {
+                System.out.println("Solution written into " + filename + "\n");
+            }
+        }
     }
 
 }
