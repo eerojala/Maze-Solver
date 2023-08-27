@@ -21,6 +21,7 @@ public class UI {
             loopProgramUntilExit(reader);
             reader.close();
         } catch (Exception e) {
+            // Error attempting to close reader
             printError(e);
         }
     }
@@ -53,6 +54,7 @@ public class UI {
         System.out.println("Instructions:");
         System.out.println("Enter a file name (include file ending) to attempt to parse and solve a maze from the file");
         System.out.println("Enter x to exit the program");
+        System.out.print("Filename: ");
     }
 
     private static boolean isExitCommand(String input) {

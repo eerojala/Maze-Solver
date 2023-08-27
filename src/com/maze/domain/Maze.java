@@ -75,16 +75,16 @@ public class Maze {
         return triedCoordinates[coordinates.getY()][coordinates.getX()];
     }
 
-    public void markCurrentCoordinatesAsTried() {
-        markCoordinatesAsTried(currentCoordinates);
+    public void markCurrentCoordinateTryStatus(boolean tried) {
+            markCoordinateTryStatus(currentCoordinates, tried);
     }
 
-    public void markCoordinatesAsTried(Coordinates coordinates) {
+    public void markCoordinateTryStatus(Coordinates coordinates, boolean tried) {
         if (coordinates == null) {
-            throw new IllegalArgumentException("Null coordinates cannot be marked as tried");
+            throw new IllegalArgumentException("Cannot update try status for null coordinates");
         }
 
-        triedCoordinates[coordinates.getY()][coordinates.getX()] = true;
+        triedCoordinates[coordinates.getY()][coordinates.getX()] = tried;
     }
 
     public void markSolutionAtCurrentLocation(char solutionChar) {

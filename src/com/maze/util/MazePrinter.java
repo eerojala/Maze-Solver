@@ -31,7 +31,7 @@ public class MazePrinter {
             System.out.println("Maze not solvable within " + maze.getStepLimit() + " steps");
         }
 
-        System.out.println("");
+        System.out.println();
     }
 
     private static void printMaze(Maze maze) {

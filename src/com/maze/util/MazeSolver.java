@@ -34,7 +34,7 @@ public class MazeSolver {
             return null;
         }
 
-        maze.markCurrentCoordinatesAsTried();
+        maze.markCurrentCoordinateTryStatus(true);
         Direction nextSuccessfulDirection = getSuccessfulDirection(maze);
 
         if (nextSuccessfulDirection != null) {
@@ -42,6 +42,14 @@ public class MazeSolver {
 
             return maze.getCurrentDirection();
         } else {
+            /*
+             * If it was not possible to reach an exit within the step limit by trying to traverse all directions from
+             * this tile then mark this tile as untried before returning.
+             *
+             * This is done so that this same tile can be tried later through a different route which might be faster
+             * and thus maybe able to reach an exit before the step limit
+             */
+            maze.markCurrentCoordinateTryStatus(false);
             return null;
         }
     }
@@ -97,13 +105,13 @@ public class MazeSolver {
 
         switch (direction) {
             case UP:
-                return y - 1 <= 0;
+                return y - 1 < 0;
             case RIGHT:
                 return x + 1 >= maze.getWidth();
             case DOWN:
                 return y + 1 >= maze.getHeight();
             case LEFT:
-                return x - 1 <= 0;
+                return x - 1 < 0;
             default:
                 throw new IllegalArgumentException("Unknown/null Direction enum: " + direction);
         }
