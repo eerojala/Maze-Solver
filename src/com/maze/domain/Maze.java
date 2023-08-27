@@ -7,7 +7,7 @@ public class Maze {
     private final int width;
     private final Coordinates startingCoordinates;
 
-    // Progression related fields
+    // Progression tracking related fields
     private boolean[][] triedCoordinates;
     private int stepLimit;
     private int currentStepCount;
@@ -44,7 +44,7 @@ public class Maze {
         this.stepLimit = stepLimit;
         currentStepCount = 0;
         currentCoordinates = startingCoordinates;
-        currentDirection = null;
+        currentDirection = Direction.INITIAL;
 
         solution = new char[height][width];
         solutionStepCount = 0;
@@ -56,6 +56,10 @@ public class Maze {
     }
 
     public Tile getTileForCoordinates(Coordinates coordinates) {
+        if (coordinates == null) {
+            throw new IllegalArgumentException("Cannot get Tile for null coordinates");
+        }
+
         return maze[coordinates.getY()][coordinates.getX()];
     }
 
@@ -64,6 +68,10 @@ public class Maze {
     }
 
     public boolean coordinatesTried(Coordinates coordinates) {
+        if (coordinates == null) {
+            throw new IllegalArgumentException("Cannot check if null coordinates are tried");
+        }
+
         return triedCoordinates[coordinates.getY()][coordinates.getX()];
     }
 
@@ -72,6 +80,10 @@ public class Maze {
     }
 
     public void markCoordinatesAsTried(Coordinates coordinates) {
+        if (coordinates == null) {
+            throw new IllegalArgumentException("Null coordinates cannot be marked as tried");
+        }
+
         triedCoordinates[coordinates.getY()][coordinates.getX()] = true;
     }
 
@@ -80,6 +92,10 @@ public class Maze {
     }
 
     public void markSolutionAt(Coordinates coordinates, char solutionChar) {
+        if (coordinates == null) {
+            throw new IllegalArgumentException("Cannot mark null coordinates as part of the solution");
+        }
+
         solution[coordinates.getY()][coordinates.getX()] = solutionChar;
     }
 
@@ -92,12 +108,24 @@ public class Maze {
     }
 
     public void updatePositionFields(Coordinates coordinates, Direction direction, int steps) {
+        if (coordinates == null) {
+            throw new IllegalArgumentException("Cannot mark current coordinates as null");
+        }
+
+        if (direction == null) {
+            throw new IllegalArgumentException("Cannot mark current direction as null");
+        }
+
         currentCoordinates = coordinates;
         currentDirection = direction;
         currentStepCount = steps;
     }
 
     public char getSolutionCharFromCoordinates(Coordinates coordinates) {
+        if (coordinates == null) {
+            throw new IllegalArgumentException("Cannot get solution char from null coordinates");
+        }
+
         return solution[coordinates.getY()][coordinates.getX()];
     }
 

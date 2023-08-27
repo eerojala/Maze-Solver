@@ -66,7 +66,7 @@ public class MazeSolver {
     }
 
     private static Direction findSuccessfulDirection(Maze maze) {
-        return Arrays.stream(Direction.values())
+        return Arrays.stream(Direction.MOVING_DIRECTIONS)
                 .filter(d -> isDirectionSuccessful(maze, d))
                 .findFirst()
                 .orElse(null);
@@ -110,7 +110,7 @@ public class MazeSolver {
     }
 
     private static Coordinates getNextCoordinates(Maze maze, Direction direction) {
-        return direction.getNextCoordinates(maze.getCurrentCoordinates());
+        return Direction.getNextCoordinates(direction, maze.getCurrentCoordinates());
     }
 
     private static void setSolved(Maze maze) {

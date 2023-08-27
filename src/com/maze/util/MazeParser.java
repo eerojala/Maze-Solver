@@ -12,7 +12,7 @@ public class MazeParser {
         // Empty private constructor for static method class
     }
 
-    public static Maze parseMaze(String filepath) throws IOException {
+    public static Maze parseMaze(String filepath) throws Exception {
         if (filepath == null) {
             throw new IllegalArgumentException("Given filepath cannot be null");
         }

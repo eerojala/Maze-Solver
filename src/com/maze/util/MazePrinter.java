@@ -4,6 +4,16 @@ import com.maze.domain.Coordinates;
 import com.maze.domain.Maze;
 
 public class MazePrinter {
+    /**
+     * For printing cyan coloured text
+     */
+    private static final String ANSI_CYAN = "\u001B[36m";
+
+    /**
+     * For resetting the text print color to default
+     */
+    private static final String ANSI_RESET = "\u001B[0m";
+
     private MazePrinter() {
         // Empty private constructor for static method class
     }
@@ -20,19 +30,21 @@ public class MazePrinter {
         } else {
             System.out.println("Maze not solvable within " + maze.getStepLimit() + " steps");
         }
+
+        System.out.println("");
     }
 
     private static void printMaze(Maze maze) {
         for (int y = 0; y < maze.getHeight(); y++) {
             for (int x = 0; x < maze.getWidth(); x++) {
-                System.out.print(getCharForPrint(maze, new Coordinates(y, x)));
+                printChar(maze, new Coordinates(y, x));
             }
 
             System.out.println();
         }
     }
 
-    private static char getCharForPrint(Maze maze, Coordinates coordinates) {
+    private static void printChar(Maze maze, Coordinates coordinates) {
         char charFromSolution = maze.getSolutionCharFromCoordinates(coordinates);
         char charFromMaze = maze.getTileForCoordinates(coordinates).getChar();
 
@@ -42,9 +54,10 @@ public class MazePrinter {
          * So to print the entire maze with solution we need to use the original maze to get the chars from tiles which
          * are not part of the solution.
          */
-        return charFromSolution != '\u0000' // null char
-                ? charFromSolution
-                : charFromMaze;
+        boolean coordinatesPartOfSolution = charFromSolution != '\u0000'; // null char
+        char printedChar = coordinatesPartOfSolution ? charFromSolution : charFromMaze;
+        String colorPrefix = coordinatesPartOfSolution ? ANSI_CYAN : "";
 
+        System.out.print(colorPrefix + printedChar + ANSI_RESET);
     }
 }
