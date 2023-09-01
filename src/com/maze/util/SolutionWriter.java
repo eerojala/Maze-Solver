@@ -22,7 +22,7 @@ public class SolutionWriter {
      * @param maze
      * @return
      */
-    public static String createSolutionAscii(Maze maze) {
+    public static String createSolutionAscii(Maze maze, boolean forPrint) {
         if (maze == null || !maze.isSolved()) {
             return null;
         }
@@ -31,7 +31,7 @@ public class SolutionWriter {
 
         for (int y = 0; y < maze.getHeight(); y++) {
             for (int x = 0; x < maze.getWidth(); x++) {
-                stringBuilder.append(getCharForCoordinates(maze, new Coordinates(y, x)));
+                stringBuilder.append(getCharForCoordinates(maze, new Coordinates(y, x), forPrint));
             }
 
             stringBuilder.append("\n");
@@ -53,13 +53,16 @@ public class SolutionWriter {
      * @param maze
      * @param coordinates
      */
-    private static char getCharForCoordinates(Maze maze, Coordinates coordinates) {
+    private static char getCharForCoordinates(Maze maze, Coordinates coordinates, boolean forPrint) {
         Direction direction = maze.getDirectionFromSolutionPath(coordinates);
-        Tile tile = maze.getTileForCoordinates(coordinates);
 
-        return direction != null && tile == Tile.SPACE // Do not mark entrance and exit with direction
-                ? direction.getChar()
+        return direction != null
+                ? getDirectionChar(direction, forPrint)
                 : maze.getTileForCoordinates(coordinates).getChar();
+    }
+
+    private static char getDirectionChar(Direction direction, boolean forPrint) {
+        return forPrint ? direction.getLetterChar() : direction.getArrowChar();
     }
 
     /**

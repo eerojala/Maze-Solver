@@ -29,7 +29,7 @@ public class MazeSolver {
             solveMaze(maze);
         } else {
             maze.setSolved(true);
-            markSolution(maze, exitCoordinates);
+            markSolution(maze, exitCoordinates, null);
         }
     }
 
@@ -100,15 +100,22 @@ public class MazeSolver {
         return notTried && walkable;
     }
 
-    private static void markSolution(Maze maze, Coordinates coordinates) {
+    private static void markSolution(Maze maze, Coordinates coordinates, Direction previousDirection) {
         if (maze.getTileForCoordinates(coordinates) == Tile.START) {
             return;
         }
 
-        Direction direction = maze.getDirectionForCoordinates(coordinates);
-        maze.updateSolutionPath(coordinates, direction);
+        if (previousDirection != null) {
+            maze.updateSolutionPath(coordinates, previousDirection);
+        }
 
-        Coordinates previousCoordinates = Direction.getPreviousCoordinates(direction, coordinates);
-        markSolution(maze, previousCoordinates);
+        Direction currentDirection = maze.getDirectionForCoordinates(coordinates);
+        /*
+         * NOTE: This method is traversing the solution path backwards, from the exit back to the entrance.
+         * Therefore the variables are named "previousDirection" and "nextCoordinates" to reflect the method traversal
+         * order and not the actual solution path order.
+         */
+        Coordinates nextCoordinates = Direction.getPreviousCoordinates(currentDirection, coordinates);
+        markSolution(maze, nextCoordinates, currentDirection);
     }
 }

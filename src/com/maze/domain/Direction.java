@@ -1,18 +1,20 @@
 package com.maze.domain;
 
 public enum Direction {
-    UP('↑', -1, 0),
-    RIGHT('→', 0, 1),
-    DOWN('↓', 1, 0),
-    LEFT('←', 0, -1),
-    INITIAL('?', 0, 0); // For the start of maze solving before any moves have been made
+    UP('↑', 'U',-1, 0),
+    RIGHT('→', 'R', 0, 1),
+    DOWN('↓', 'D', 1, 0),
+    LEFT('←', 'L', 0, -1),
+    INITIAL('X', 'X',0, 0); // For the start of maze solving before any moves have been made
 
-    private final char ch;
+    private final char arrowChar;
+    private final char letterChar;
     private final int yAppend;
     private final int xAppend;
 
-    Direction(char ch, int yAppend, int xAppend) {
-        this.ch = ch;
+    Direction(char arrowChar, char letterChar, int yAppend, int xAppend) {
+        this.arrowChar = arrowChar;
+        this.letterChar = letterChar;
         this.yAppend = yAppend;
         this.xAppend = xAppend;
     }
@@ -26,8 +28,12 @@ public enum Direction {
      * INITIAL = '?'
      * @return
      */
-    public char getChar() {
-        return ch;
+    public char getArrowChar() {
+        return arrowChar;
+    }
+
+    public char getLetterChar() {
+        return letterChar;
     }
 
     /**

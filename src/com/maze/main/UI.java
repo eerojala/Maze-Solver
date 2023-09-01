@@ -55,9 +55,13 @@ public class UI {
 
                 Maze maze = MazeParser.parseMaze(input);
                 MazeSolver.solveMaze(maze);
-                String solutionGraphic = SolutionWriter.createSolutionAscii(maze);
-                printSolution(maze, solutionGraphic);
-                // writeSolutionIntoFile(solutionGraphic);
+                String solutionPrintAscii = SolutionWriter.createSolutionAscii(maze, true);
+                printSolution(maze, solutionPrintAscii);
+
+                if (solutionPrintAscii != null) {
+                    String solutionFileAscii = SolutionWriter.createSolutionAscii(maze, false);
+                    writeSolutionIntoFile(solutionFileAscii);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
