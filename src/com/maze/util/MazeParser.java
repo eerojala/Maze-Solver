@@ -23,7 +23,7 @@ public class MazeParser {
      */
     public static Maze parseMaze(String filepath) throws Exception {
         if (filepath == null) {
-            throw new IllegalArgumentException("Given filepath cannot be null");
+            throw new NullPointerException("Given filepath cannot be null");
         }
 
         File file = new File(filepath);
@@ -61,7 +61,7 @@ public class MazeParser {
      */
     private static Maze createMaze(List<List<Tile>> tilesPerLine) {
         if (tilesPerLine.isEmpty()) {
-            throw new IllegalArgumentException("Given file cannot be empty");
+            throw new NullPointerException("Given file cannot be empty");
         }
 
         int width = tilesPerLine.get(0).size();

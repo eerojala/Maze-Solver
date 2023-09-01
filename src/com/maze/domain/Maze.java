@@ -1,8 +1,6 @@
 package com.maze.domain;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Maze {
     private static final List<Integer> LIMITS = List.of(20, 150, 200);
@@ -24,7 +22,7 @@ public class Maze {
 
     // Solution related fields
     private boolean solved;
-    private List<CoordinatesAndDirection> solutionPath;
+    private Map<Coordinates, Direction> solutionPath;
 
     public Maze(Tile[][] maze) {
         this.maze = maze;
@@ -41,7 +39,7 @@ public class Maze {
         currentStepCount = 0;
 
         solved = false;
-        solutionPath = new ArrayList<>();
+        solutionPath = new HashMap<>();
     }
 
     /**
@@ -97,11 +95,11 @@ public class Maze {
      */
     public Tile getTileForCoordinates(Coordinates coordinates) {
         if (coordinates == null) {
-            throw new IllegalArgumentException("Cannot get Tile for null coordinates");
+            throw new NullPointerException("Cannot get Tile for null coordinates");
         }
 
         if (!areCoordinatesInBounds(coordinates)) {
-            throw new IllegalArgumentException("Cannot get Tile for out-of-bounds coordinates");
+            throw new IndexOutOfBoundsException("Cannot get Tile for out-of-bounds coordinates " + coordinates);
         }
 
         return maze[coordinates.getY()][coordinates.getX()];
@@ -109,7 +107,7 @@ public class Maze {
 
     public boolean areCoordinatesInBounds(Coordinates coordinates) {
         if (coordinates == null) {
-            throw new IllegalArgumentException("Cannot check if null coordinates are in bounds");
+            throw new NullPointerException("Cannot check if null coordinates are in bounds");
         }
 
         int y = coordinates.getY();
@@ -124,11 +122,11 @@ public class Maze {
 
     public int getStepCountForCoordinates(Coordinates coordinates) {
         if (coordinates == null) {
-            throw new IllegalArgumentException("Cannot get step count for null coordinates");
+            throw new NullPointerException("Cannot get step count for null coordinates");
         }
 
         if (!areCoordinatesInBounds(coordinates)) {
-            throw new IllegalArgumentException("Cannot get step count for out-of-bounds coordinates");
+            throw new IndexOutOfBoundsException("Cannot get step count for out-of-bounds coordinates " + coordinates);
         }
 
         return stepTracker[coordinates.getY()][coordinates.getX()];
@@ -140,11 +138,11 @@ public class Maze {
 
     public void markStepCountForCoordinates(Coordinates coordinates, int stepCount) {
         if (coordinates == null) {
-            throw new IllegalArgumentException("Cannot mark step count for null coordinates");
+            throw new NullPointerException("Cannot mark step count for null coordinates");
         }
 
         if (!areCoordinatesInBounds(coordinates)) {
-            throw new IllegalArgumentException("Cannot mark step count for out-of-bounds coordinates");
+            throw new IndexOutOfBoundsException("Cannot mark step count for out-of-bounds coordinates " + coordinates);
         }
 
         stepTracker[coordinates.getY()][coordinates.getX()] = stepCount;
@@ -152,14 +150,47 @@ public class Maze {
 
     public void markDirectionForCoordinates(Coordinates coordinates, Direction direction) {
         if (coordinates == null) {
-            throw new IllegalArgumentException("Cannot mark direction for null coordinates");
+            throw new NullPointerException("Cannot mark direction for null coordinates");
         }
 
         if (!areCoordinatesInBounds(coordinates)) {
-            throw new IllegalArgumentException("Cannot mark direction for null coordinates");
+            throw new NullPointerException("Cannot mark direction for null coordinates");
         }
 
         directionTracker[coordinates.getY()][coordinates.getX()] = direction;
+    }
+
+    public Direction getDirectionForCoordinates(Coordinates coordinates) {
+        if (coordinates == null) {
+            throw new NullPointerException("Cannot get direction for null coordinates");
+        }
+
+        if (!areCoordinatesInBounds(coordinates)) {
+            throw new IndexOutOfBoundsException("Cannot get direction of out-of-bounds coordinates " + coordinates);
+        }
+
+        return directionTracker[coordinates.getY()][coordinates.getX()];
+    }
+
+    public void updateSolutionPath(Coordinates coordinates, Direction direction) {
+        if (coordinates == null) {
+            throw new NullPointerException("Cannot put null coordinates to the solution path");
+        }
+
+        if (direction == null) {
+            // IAE instead of NPE because only passing the argument and not actually calling it's methods.
+            throw new IllegalArgumentException("Cannot put null direction to the solution path");
+        }
+
+        solutionPath.put(coordinates, direction);
+    }
+
+    public Direction getDirectionFromSolutionPath(Coordinates coordinates) {
+        if (coordinates == null) {
+            throw new NullPointerException("Cannot get direction from solution path for null coordinates");
+        }
+
+        return solutionPath.get(coordinates);
     }
 
     // Basic getters and setters for fields
@@ -220,11 +251,11 @@ public class Maze {
         this.currentCoordinatesAndDirections = currentCoordinatesAndDirections;
     }
 
-    public List<CoordinatesAndDirection> getSolutionPath() {
+    public Map<Coordinates, Direction> getSolutionPath() {
         return solutionPath;
     }
 
-    public void setSolutionPath(List<CoordinatesAndDirection> solutionPath) {
+    public void setSolutionPath(Map<Coordinates, Direction> solutionPath) {
         this.solutionPath = solutionPath;
     }
 }

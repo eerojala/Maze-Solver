@@ -90,7 +90,7 @@ public class UI {
      */
     private static void printSolution(Maze maze, String solutionGraphic)  {
         if (maze == null) {
-            throw new IllegalArgumentException("Maze must not be null in order for the solution to be printed");
+            throw new NullPointerException("Maze must not be null in order for the solution to be printed");
         }
 
         int stepLimit = maze.getCurrentStepLimit();

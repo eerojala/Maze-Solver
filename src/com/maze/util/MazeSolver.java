@@ -15,21 +15,21 @@ public class MazeSolver {
 
     public static void solveMaze(Maze maze) {
         if (maze == null) {
-            throw new IllegalArgumentException("Solvable maze cannot be null");
+            throw new NullPointerException("Solvable maze cannot be null");
         }
 
         if (isStepCountOverMaxLimit(maze)) {
             return;
         }
 
-        boolean exitFound = markCurrentStepCountsAndDirections(maze);
+        Coordinates exitCoordinates = markCurrentStepCountsAndDirections(maze);
 
-        if (exitFound) {
-            maze.setSolved(true);
-            // TODO: Mark solution path
-        } else {
+        if (exitCoordinates == null) {
             setupMazeForNextIteration(maze);
             solveMaze(maze);
+        } else {
+            maze.setSolved(true);
+            markSolution(maze, exitCoordinates);
         }
     }
 
@@ -43,7 +43,7 @@ public class MazeSolver {
         return limitIncremented ? isStepCountOverMaxLimit(maze) : false;
     }
 
-    private static boolean markCurrentStepCountsAndDirections(Maze maze) {
+    private static Coordinates markCurrentStepCountsAndDirections(Maze maze) {
         for (var cad : maze.getCurrentCoordinatesAndDirections()) {
             Coordinates coordinates = cad.getCoordinates();
             maze.markCurrentStepCountForCoordinates(coordinates);
@@ -52,11 +52,11 @@ public class MazeSolver {
             maze.markDirectionForCoordinates(coordinates, direction);
 
             if (areExitCoordinates(maze, coordinates)) {
-                return true;
+                return coordinates;
             }
         }
 
-        return false;
+        return null;
     }
 
     private static boolean areExitCoordinates(Maze maze, Coordinates coordinates) {
@@ -100,7 +100,15 @@ public class MazeSolver {
         return notTried && walkable;
     }
 
-    private static void markMazeAsSolved(Maze maze) {
-        maze.setSolved(true);
+    private static void markSolution(Maze maze, Coordinates coordinates) {
+        if (maze.getTileForCoordinates(coordinates) == Tile.START) {
+            return;
+        }
+
+        Direction direction = maze.getDirectionForCoordinates(coordinates);
+        maze.updateSolutionPath(coordinates, direction);
+
+        Coordinates previousCoordinates = Direction.getPreviousCoordinates(direction, coordinates);
+        markSolution(maze, previousCoordinates);
     }
 }

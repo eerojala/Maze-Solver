@@ -3,8 +3,8 @@ package com.maze.util;
 import com.maze.domain.Coordinates;
 import com.maze.domain.Direction;
 import com.maze.domain.Maze;
+import com.maze.domain.Tile;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 
@@ -54,15 +54,12 @@ public class SolutionWriter {
      * @param coordinates
      */
     private static char getCharForCoordinates(Maze maze, Coordinates coordinates) {
-        Direction direction = maze.getDirectionTracker()[coordinates.getY()][coordinates.getX()];
+        Direction direction = maze.getDirectionFromSolutionPath(coordinates);
+        Tile tile = maze.getTileForCoordinates(coordinates);
 
-        /*
-         * char arrays are initialized with default values (=null char) and in the solution array new values are only
-         * added for the tiles which are part of the solution path.
-         * So to print the entire maze with solution we need to use the original maze to get the chars from tiles which
-         * are not part of the solution.
-         */
-        return direction != null ? direction.getChar() : maze.getTileForCoordinates(coordinates).getChar();
+        return direction != null && tile == Tile.SPACE // Do not mark entrance and exit with direction
+                ? direction.getChar()
+                : maze.getTileForCoordinates(coordinates).getChar();
     }
 
     /**

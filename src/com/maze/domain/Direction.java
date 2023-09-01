@@ -38,16 +38,28 @@ public enum Direction {
      * @return
      */
     public static Coordinates getNextCoordinates(Direction direction, Coordinates coordinates) {
-        if (direction == null || direction == Direction.INITIAL) {
-            throw new IllegalArgumentException("Cannot give next coordinates for null or INITIAL direction");
+        return getNextCoordinates(direction, coordinates, 1);
+    }
+
+    public static Coordinates getPreviousCoordinates(Direction direction, Coordinates coordinates) {
+        return getNextCoordinates(direction, coordinates, -1);
+    }
+
+    private static Coordinates getNextCoordinates(Direction direction, Coordinates coordinates, int factor) {
+        if (direction == null) {
+            throw new NullPointerException("Cannot give adjacent coordinates for null direction");
+        }
+
+        if (direction == Direction.INITIAL) {
+            throw new IllegalArgumentException("Cannot give adjacent coordinates for INITIAL direction");
         }
 
         if (coordinates == null) {
-            throw new IllegalArgumentException("Cannot give next coordinates for null coordinates");
+            throw new NullPointerException("Cannot give adjacent coordinates for null coordinates");
         }
 
-        int y = coordinates.getY() + direction.yAppend;
-        int x = coordinates.getX() + direction.xAppend;
+        int y = coordinates.getY() + (factor * direction.yAppend);
+        int x = coordinates.getX() + (factor * direction.xAppend);
 
         return new Coordinates(y, x);
     }
