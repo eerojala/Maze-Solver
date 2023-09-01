@@ -1,6 +1,7 @@
 package com.maze.util;
 
 import com.maze.domain.Coordinates;
+import com.maze.domain.Direction;
 import com.maze.domain.Maze;
 
 import java.io.IOException;
@@ -53,8 +54,7 @@ public class SolutionWriter {
      * @param coordinates
      */
     private static char getCharForCoordinates(Maze maze, Coordinates coordinates) {
-        char charFromSolution = maze.getSolutionCharFromCoordinates(coordinates);
-        char charFromMaze = maze.getTileForCoordinates(coordinates).getChar();
+        Direction direction = maze.getDirectionTracker()[coordinates.getY()][coordinates.getX()];
 
         /*
          * char arrays are initialized with default values (=null char) and in the solution array new values are only
@@ -62,9 +62,7 @@ public class SolutionWriter {
          * So to print the entire maze with solution we need to use the original maze to get the chars from tiles which
          * are not part of the solution.
          */
-        return charFromSolution != '\u0000' // null char
-                ? charFromSolution
-                : charFromMaze;
+        return direction != null ? direction.getChar() : maze.getTileForCoordinates(coordinates).getChar();
     }
 
     /**

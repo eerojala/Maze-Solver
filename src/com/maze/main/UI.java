@@ -54,10 +54,10 @@ public class UI {
                 }
 
                 Maze maze = MazeParser.parseMaze(input);
-                MazeSolver.attemptToSolveMaze(maze);
+                MazeSolver.solveMaze(maze);
                 String solutionGraphic = SolutionWriter.createSolutionAscii(maze);
                 printSolution(maze, solutionGraphic);
-                writeSolutionIntoFile(solutionGraphic);
+                // writeSolutionIntoFile(solutionGraphic);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -93,11 +93,11 @@ public class UI {
             throw new IllegalArgumentException("Maze must not be null in order for the solution to be printed");
         }
 
-        int stepLimit = maze.getStepLimit();
+        int stepLimit = maze.getCurrentStepLimit();
 
         if (maze.isSolved() && solutionGraphic != null) {
             System.out.println("Maze was solvable within " + stepLimit + " steps");
-            System.out.println("Solution with " + maze.getSolutionStepCount() + " steps:");
+            System.out.println("Solution with " + maze.getCurrentStepCount() + " steps:");
             System.out.println(solutionGraphic);
         } else {
             System.out.println("Maze was not solvable within " + stepLimit);
