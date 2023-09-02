@@ -5,7 +5,8 @@ public enum Direction {
     RIGHT('→', 'R', 0, 1),
     DOWN('↓', 'D', 1, 0),
     LEFT('←', 'L', 0, -1),
-    INITIAL('X', 'X',0, 0); // For the start of maze solving before any moves have been made
+    // For the start of maze solving before any moves have been made
+    INITIAL('X', 'X',0, 0);
 
     private final char arrowChar;
     private final char letterChar;
@@ -20,18 +21,27 @@ public enum Direction {
     }
 
     /**
-     * Returns a char representation of the Direction.
+     * Returns an arrow character representation of the Direction.
      * UP = '↑'
      * RIGHT = '→'
      * DOWN = '↓'
      * LEFT = '←'
-     * INITIAL = '?'
-     * @return
+     * INITIAL = 'X'
+     * @return an arrow character representation of the Direction.
      */
     public char getArrowChar() {
         return arrowChar;
     }
 
+    /**
+     * Returns a single letter representation of the Direction.
+     * UP = 'U'
+     * RIGHT = 'R'
+     * DOWN = 'D'
+     * LEFT 'L'
+     * INITIAL = 'X'
+     * @return a single letter representation of the Direction.
+     */
     public char getLetterChar() {
         return letterChar;
     }
@@ -41,12 +51,20 @@ public enum Direction {
      * coordinates which are above.
      * @param direction not null or INITIAL
      * @param coordinates not null
-     * @return
+     * @return coordinates next to the given coordinates from the given direction
      */
     public static Coordinates getNextCoordinates(Direction direction, Coordinates coordinates) {
         return getNextCoordinates(direction, coordinates, 1);
     }
 
+    /**
+     * Returns coordinates previous from the given coordinates and the given direction, e.g. if direction is UP, then
+     * returns coordinates which are below
+     *
+     * @param direction not null or INITIAL
+     * @param coordinates not null or INITIAL
+     * @return coordinates previous from the given coordinates from the given direction
+     */
     public static Coordinates getPreviousCoordinates(Direction direction, Coordinates coordinates) {
         return getNextCoordinates(direction, coordinates, -1);
     }
@@ -71,7 +89,7 @@ public enum Direction {
     }
 
     /**
-     * Returns all moving Directions, i.e. every Direction except INITIAL
+     * All moving Directions, i.e. every Direction except INITIAL
      */
     public static final Direction[] MOVING_DIRECTIONS = new Direction[] { UP, RIGHT, DOWN, LEFT };
 }

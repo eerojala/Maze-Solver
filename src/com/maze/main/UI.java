@@ -15,9 +15,8 @@ public class UI {
     }
 
     /**
-     * Starts the main program loop
+     * Starts the main program loop. Will cause an IOException if closing the input reader fails.
      *
-     * @throws Exception If closing the input reader fails
      */
     public static void start() {
         var reader = new BufferedReader(new InputStreamReader(System.in));
@@ -34,14 +33,14 @@ public class UI {
     /**
      * The main program loop:
      * 1. Print instructions
-     * 2. Wait for user to input a filename or 'x'
+     * 2. Wait for user to input a filename or 'x' (case insensitive)
      * 3. If user inputted 'x' then exit the loop
      * 4. If the user inputted something else, then attempt to parse a file based on the filename user inputted
      * 5. If parsing was successful then attempt to solve the maze
      * 6. Print the solving results into console
      * 7. If the solving was successful then also write the solution into a text file
-     * 8. Start back at step 1, even if errors occured during any of the previous steps
-     * @param reader
+     * 8. Start back at step 1, even if errors occurred during any of the previous steps
+     * @param reader BufferedReader used for reading user input.
      */
     private static void loopProgramUntilExit(BufferedReader reader) {
         while (true) {
@@ -77,8 +76,8 @@ public class UI {
 
     /**
      * Returns a boolean based on if the given string equals "x" (case insensitive)
-     * @param input
-     * @return
+     * @param input User input
+     * @return True if input equals to 'x' (case insensitive), false otherwise.
      */
     private static boolean isExitCommand(String input) {
         return input != null && Objects.equals("x", input.toLowerCase());
@@ -87,10 +86,11 @@ public class UI {
     /**
      * Prints given solution graphic + information about amount of steps required for the solution into the console.
      *
-     * If maze is unsolved and/or soltion graphic is null then prints message stating that the maze was not solvable.
+     * If maze is unsolved and/or solution ascii is null then prints message stating that the maze was not solvable
+     * within the maximum limit.
      *
      * @param maze not null
-     * @param solutionGraphic
+     * @param solutionGraphic ASCII graphic to be printed if maze was solved.
      */
     private static void printSolution(Maze maze, String solutionGraphic)  {
         if (maze == null) {
@@ -104,17 +104,17 @@ public class UI {
             System.out.println("Solution with " + maze.getCurrentStepCount() + " steps:");
             System.out.println(solutionGraphic);
         } else {
-            System.out.println("Maze was not solvable within " + stepLimit);
+            System.out.println("Maze was not solvable within " + stepLimit + " steps");
         }
 
     }
 
     /**
-     * Writes the given solution graphic (if not null) into a text file.
+     * Writes the given solution ASCII graphic (if not null) into a new text file.
      * If the file writing operation was successful then also prints the filename into the console.
      *
-     * @param solutionGraphic
-     * @throws Exception
+     * @param solutionGraphic Solution ASCII graphic to be written into the file.
+     * @throws Exception caused by trying to write the solution ASCII graphic into a new text file.
      */
     private static void writeSolutionIntoFile(String solutionGraphic) throws Exception {
         if (solutionGraphic != null) {

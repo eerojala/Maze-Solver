@@ -5,15 +5,14 @@ import java.util.*;
 public class Maze {
     private static final List<Integer> LIMITS = List.of(20, 150, 200);
 
-    // Immutable structure related fields
+    // Structure related fields
     private final Tile[][] maze;
     private final int height;
     private final int width;
-    private final Coordinates startingCoordinates;
 
     // Overall progression tracking related fields
-    private int[][] stepTracker;
-    private Direction[][] directionTracker;
+    private final boolean[][] coordinatesCheckStatus;
+    private final Direction[][] directionTracker;
     private int stepLimitIndex;
 
     // Current progression iteration tracking related fields
@@ -22,19 +21,19 @@ public class Maze {
 
     // Solution related fields
     private boolean solved;
-    private Map<Coordinates, Direction> solutionPath;
+    private final Map<Coordinates, Direction> solutionPath;
 
     public Maze(Tile[][] maze) {
         this.maze = maze;
         height = maze.length;
         width = maze[0].length;
-        startingCoordinates = findStartingCoordinates();
 
-        this.stepTracker = new int[height][width];
-        Arrays.stream(stepTracker).forEach(row -> Arrays.fill(row, -1)); // Fill matrix with value -1
+
+        this.coordinatesCheckStatus = new boolean[height][width];
         directionTracker = new Direction[height][width];
         stepLimitIndex = 0;
 
+        Coordinates startingCoordinates = findStartingCoordinates();
         currentCoordinatesAndDirections = List.of(new CoordinatesAndDirection(startingCoordinates, Direction.INITIAL));
         currentStepCount = 0;
 
@@ -45,7 +44,7 @@ public class Maze {
     /**
      * Finds and returns the starting coordinates (=coordinates where the START tile is located at)
      *
-     * @return
+     * @return the starting coordinates of the maze
      *
      * @throws IllegalArgumentException if the maze does not contain exactly one starting point
      */
@@ -69,15 +68,29 @@ public class Maze {
         return startingCoordinates;
     }
 
+    /**
+     * Checks if current step count is over the current limit
+     *
+     * @return true if current step count is over the current limit, false if not
+     */
     public boolean overCurrentLimit() {
         return currentStepCount > LIMITS.get(stepLimitIndex);
     }
 
+    /**
+     * Returns current step limit of the maze
+     * @return current step limit
+     */
     public int getCurrentStepLimit() {
         return LIMITS.get(stepLimitIndex);
     }
 
-    public boolean incrementCurrentLimit() {
+    /**
+     * Increases current limit unless the current limit is already at maximum
+     *
+     * @return true if limit was increased, false if not (limit was already at maximum)
+     */
+    public boolean increaseCurrentLimit() {
         if (stepLimitIndex >= LIMITS.size() - 1) {
             return false;
         }
@@ -90,22 +103,28 @@ public class Maze {
     /**
      * Returns the Tile of the given coordinates
      *
-     * @param coordinates not null
-     * @return
+     * @param coordinates not null and not out-of-bounds
+     * @return Tile of the given coordinates
      */
     public Tile getTileForCoordinates(Coordinates coordinates) {
         if (coordinates == null) {
             throw new NullPointerException("Cannot get Tile for null coordinates");
         }
 
-        if (!areCoordinatesInBounds(coordinates)) {
+        if (areCoordinatesOutOfBounds(coordinates)) {
             throw new IndexOutOfBoundsException("Cannot get Tile for out-of-bounds coordinates " + coordinates);
         }
 
         return maze[coordinates.getY()][coordinates.getX()];
     }
 
-    public boolean areCoordinatesInBounds(Coordinates coordinates) {
+    /**
+     * Checks if given coordinates would be out-of-bounds for the maze
+     *
+     * @param coordinates not null
+     * @return true if Coordinates are out-of-bounds, false if not
+     */
+    public boolean areCoordinatesOutOfBounds(Coordinates coordinates) {
         if (coordinates == null) {
             throw new NullPointerException("Cannot check if null coordinates are in bounds");
         }
@@ -117,61 +136,87 @@ public class Maze {
         boolean tooDown = y >= height;
         boolean tooLeft = x < 0;
 
-        return !(tooUp || tooRight || tooDown || tooLeft);
+        return tooUp || tooRight || tooDown || tooLeft;
     }
 
-    public int getStepCountForCoordinates(Coordinates coordinates) {
+    /**
+     * Checks if given coordinates have already been checked.
+     *
+     * @param coordinates not null and not out-of-bounds
+     * @return true if given coordinates have already been checked, false if not
+     */
+    public boolean areCoordinatesChecked(Coordinates coordinates) {
         if (coordinates == null) {
-            throw new NullPointerException("Cannot get step count for null coordinates");
+            throw new NullPointerException("Cannot check if null coordinates are visited");
         }
 
-        if (!areCoordinatesInBounds(coordinates)) {
-            throw new IndexOutOfBoundsException("Cannot get step count for out-of-bounds coordinates " + coordinates);
+        if (areCoordinatesOutOfBounds(coordinates)) {
+            throw new IndexOutOfBoundsException("Cannot check if out-of-bounds coordinates are visited " + coordinates);
         }
 
-        return stepTracker[coordinates.getY()][coordinates.getX()];
+        return coordinatesCheckStatus[coordinates.getY()][coordinates.getX()];
     }
 
-    public void markCurrentStepCountForCoordinates(Coordinates coordinates) {
-        markStepCountForCoordinates(coordinates, currentStepCount);
-    }
-
-    public void markStepCountForCoordinates(Coordinates coordinates, int stepCount) {
+    /**
+     * Marks given coordinates as checked.
+     *
+     * @param coordinates not null and not out-of-bounds
+     */
+    public void markCoordinatesAsChecked(Coordinates coordinates) {
         if (coordinates == null) {
-            throw new NullPointerException("Cannot mark step count for null coordinates");
+            throw new NullPointerException("Cannot mark null coordinates as visited");
         }
 
-        if (!areCoordinatesInBounds(coordinates)) {
-            throw new IndexOutOfBoundsException("Cannot mark step count for out-of-bounds coordinates " + coordinates);
+        if (areCoordinatesOutOfBounds(coordinates)) {
+            throw new IndexOutOfBoundsException("Cannot mark out-of-bound coordinates as visited" + coordinates);
         }
 
-        stepTracker[coordinates.getY()][coordinates.getX()] = stepCount;
+        coordinatesCheckStatus[coordinates.getY()][coordinates.getX()] = true;
     }
 
+    /**
+     * Marks the given direction for the given coordinates.
+     * The direction will be used for displaying the solution path in file/console print if maze is solvable.
+     *
+     * @param coordinates not null and not out out of bounds
+     * @param direction from the previous tile
+     */
     public void markDirectionForCoordinates(Coordinates coordinates, Direction direction) {
         if (coordinates == null) {
             throw new NullPointerException("Cannot mark direction for null coordinates");
         }
 
-        if (!areCoordinatesInBounds(coordinates)) {
-            throw new NullPointerException("Cannot mark direction for null coordinates");
+        if (areCoordinatesOutOfBounds(coordinates)) {
+            throw new IndexOutOfBoundsException("Cannot mark direction for null coordinates");
         }
 
         directionTracker[coordinates.getY()][coordinates.getX()] = direction;
     }
 
+    /**
+     * Returns the Direction which has been stored for the given Coordinates. If no direction has been saved for the
+     * coordinates then returns null
+     * @param coordinates not null and not out-of-bounds
+     * @return Direction stored for the given Coordinates
+     */
     public Direction getDirectionForCoordinates(Coordinates coordinates) {
         if (coordinates == null) {
             throw new NullPointerException("Cannot get direction for null coordinates");
         }
 
-        if (!areCoordinatesInBounds(coordinates)) {
+        if (areCoordinatesOutOfBounds(coordinates)) {
             throw new IndexOutOfBoundsException("Cannot get direction of out-of-bounds coordinates " + coordinates);
         }
 
         return directionTracker[coordinates.getY()][coordinates.getX()];
     }
 
+    /**
+     * Updates the given Coordinates and Direction towards the next coordinates in the solution path.
+     *
+     * @param coordinates not null
+     * @param direction not null
+     */
     public void updateSolutionPath(Coordinates coordinates, Direction direction) {
         if (coordinates == null) {
             throw new NullPointerException("Cannot put null coordinates to the solution path");
@@ -185,6 +230,12 @@ public class Maze {
         solutionPath.put(coordinates, direction);
     }
 
+    /**
+     * Gets the Direction pointing towards the next Coordinates in the solution path for the given coordinates. Returns
+     * null if the given Coordinates are not part of the solution path.
+     * @param coordinates not null
+     * @return Direction pointing towards the next Coordinates in the solution path
+     */
     public Direction getDirectionFromSolutionPath(Coordinates coordinates) {
         if (coordinates == null) {
             throw new NullPointerException("Cannot get direction from solution path for null coordinates");
@@ -203,46 +254,6 @@ public class Maze {
         return width;
     }
 
-    public int getCurrentStepCount() {
-        return currentStepCount;
-    }
-
-    public boolean isSolved() {
-        return solved;
-    }
-
-    public Tile[][] getMaze() {
-        return maze;
-    }
-
-    public Coordinates getStartingCoordinates() {
-        return startingCoordinates;
-    }
-
-    public int[][] getStepTracker() {
-        return stepTracker;
-    }
-
-    public void setStepTracker(int[][] stepTracker) {
-        this.stepTracker = stepTracker;
-    }
-
-    public Direction[][] getDirectionTracker() {
-        return directionTracker;
-    }
-
-    public void setDirectionTracker(Direction[][] directionTracker) {
-        this.directionTracker = directionTracker;
-    }
-
-    public void setCurrentStepCount(int currentStepCount) {
-        this.currentStepCount = currentStepCount;
-    }
-
-    public void setSolved(boolean solved) {
-        this.solved = solved;
-    }
-
     public List<CoordinatesAndDirection> getCurrentCoordinatesAndDirections() {
         return currentCoordinatesAndDirections;
     }
@@ -251,11 +262,19 @@ public class Maze {
         this.currentCoordinatesAndDirections = currentCoordinatesAndDirections;
     }
 
-    public Map<Coordinates, Direction> getSolutionPath() {
-        return solutionPath;
+    public int getCurrentStepCount() {
+        return currentStepCount;
     }
 
-    public void setSolutionPath(Map<Coordinates, Direction> solutionPath) {
-        this.solutionPath = solutionPath;
+    public void setCurrentStepCount(int currentStepCount) {
+        this.currentStepCount = currentStepCount;
+    }
+
+    public boolean isSolved() {
+        return solved;
+    }
+
+    public void setSolved(boolean solved) {
+        this.solved = solved;
     }
 }

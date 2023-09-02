@@ -17,24 +17,24 @@ public enum Tile {
     }
 
     /**
-     * Returns a char representation of the Tile.<br>
-     * BLOCK = '#'<br>
-     * SPACE = ' '<br>
-     * EXIT = 'E'<br>
-     * START = '^'<br>
-     * @return
+     * Returns a char representation of the Tile.
+     * BLOCK = '#'
+     * SPACE = ' '
+     * EXIT = 'E'
+     * START = '^'
+     * @return char representation of the Tile
      */
     public char getChar() {
         return ch;
     }
 
     /**
-     * Parses a tile type from given char.<br>
-     * Possible parsable characters are '#', ' ', 'E' and '^'.<br>
-     * If the given char is not any of these characters, then method will throw NoSuchElementException<br>
+     * Parses a tile type from given char.
+     * Possible parsable characters are '#', ' ', 'E' and '^'
      *
      * @param ch char to be parsed
      * @return TileType parsed from char
+     * @throws NoSuchElementException If the given char is not a parsable character
      */
     public static Tile parseTile(char ch) {
         return Arrays.stream(Tile.values())

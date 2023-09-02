@@ -18,7 +18,7 @@ public class MazeParser {
      * Should never be null, if parsing fails will throw an Exception.
      *
      * @param filepath not null
-     * @return
+     * @return Maze parsed from the file found at the given filepath
      * @throws Exception caused by parsing the file, closing the file reader or the maze being in an invalid format
      */
     public static Maze parseMaze(String filepath) throws Exception {
@@ -40,11 +40,20 @@ public class MazeParser {
         }
     }
 
-
+    /**
+     * Parses Tiles from a file using the given BufferedReader.
+     * @param reader for the file
+     * @return Nested List of the Tiles parsed from the file, where each sub-list represents a single line from the file
+     */
     private static List<List<Tile>> parseTilesFromFile(BufferedReader reader) {
         return reader.lines().map(MazeParser::parseTilesFromLine).collect(Collectors.toList());
     }
 
+    /**
+     * Parses all of the Tiles from a single line parsed from the file.
+     * @param line parsed from the file
+     * @return all of the Tiles parsed from a single line from the file.
+     */
     private static List<Tile> parseTilesFromLine(String line) {
         return line.chars()
                 // chars() is actually an IntStream despite the name
@@ -53,9 +62,9 @@ public class MazeParser {
     }
 
     /**
-     * Creates a maze from the tiles parsed from the given file.
-     * @param tilesPerLine
-     * @return
+     * Creates a Maze from the tiles parsed from the given file.
+     * @param tilesPerLine Nested list of tiles parsed from the file, not null.
+     * @return Maze created from the Tiles parsed from the file
      * @throws IllegalArgumentException if no tiles were able to be parsed from the file or if the individual maze rows
      * do not have the same width
      */
@@ -73,14 +82,21 @@ public class MazeParser {
         return new Maze(createTileMatrix(tilesPerLine));
     }
 
+    /**
+     * Checks if all of the lines parsed from the line are the same length, i.e. given nested List has all sub-lists
+     * being the same size
+     * @param rows Nested List of Tiles, i.e. lines, parsed from the file
+     * @param length which all of the individual rows should match
+     * @return true if all rows are the same length, false if not
+     */
     private static boolean allRowsSameLength(List<List<Tile>> rows, int length) {
         return rows.stream().noneMatch(row -> row.size() != length);
     }
 
     /**
-     * Attemps to close the given BufferedReader if it is not null
-     * s
-     * @param reader
+     * Attempts to close the given BufferedReader if it is not null
+     *
+     * @param reader initialized for the file parsing
      * @throws IOException caused by reader.close()
      */
     private static void closeBufferedReader(BufferedReader reader) throws IOException {
@@ -91,9 +107,9 @@ public class MazeParser {
 
     /**
      * Creates a 2D array of Tiles based on the given Tiles per line.
-     * Tile from tilesPerLine.get(i).get(j) is stored in Tile[i][j]
-     * @param tilesPerLine
-     * @return
+     * Note that Tiles from tilesPerLine.get(i).get(j) are stored in Tile[i][j]
+     * @param tilesPerLine Nested List of Tiles parsed from the file
+     * @return 2D array of the Tiles parsed from the file
      */
     private static Tile[][] createTileMatrix(List<List<Tile>> tilesPerLine) {
         return tilesPerLine.stream()

@@ -1,5 +1,8 @@
 package com.maze.domain;
 
+/**
+ * Wrapper for Coordinate and Direction pairs so don't have to use verbose AbstractMap.SimpleEntry.
+ */
 public class CoordinatesAndDirection {
     private final Coordinates coordinates;
     private final Direction direction;
