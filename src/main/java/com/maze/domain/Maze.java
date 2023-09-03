@@ -36,7 +36,7 @@ public class Maze {
         stepLimitIndex = 0;
 
         Coordinates startingCoordinates = findStartingCoordinates();
-        currentCoordinatesAndDirections =  List.of(new ImmutablePair<>(startingCoordinates, Direction.INITIAL));
+        currentCoordinatesAndDirections = List.of(new ImmutablePair<>(startingCoordinates, Direction.INITIAL));
         currentStepCount = 0;
 
         solved = false;
