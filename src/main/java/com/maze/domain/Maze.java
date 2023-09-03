@@ -6,17 +6,15 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.*;
 
 public class Maze {
-    private static final List<Integer> LIMITS = List.of(20, 150, 200);
-
     // Structure related fields
     private final Tile[][] maze;
     private final int height;
     private final int width;
 
     // Overall progression tracking related fields
-    private final boolean[][] coordinatesCheckStatus;
-    private final Direction[][] directionTracker;
-    private int stepLimitIndex;
+    private boolean[][] coordinatesCheckStatus;
+    private Direction[][] directionTracker;
+    private int stepLimit;
 
     // Current progression iteration tracking related fields
     private List<Pair<Coordinates, Direction>> currentCoordinatesAndDirections;
@@ -24,23 +22,13 @@ public class Maze {
 
     // Solution related fields
     private boolean solved;
-    private final Map<Coordinates, Direction> solutionPath;
+    private Map<Coordinates, Direction> solutionPath;
 
     public Maze(Tile[][] maze) {
         this.maze = maze;
         height = maze.length;
         width = maze[0].length;
-
-        this.coordinatesCheckStatus = new boolean[height][width];
-        directionTracker = new Direction[height][width];
-        stepLimitIndex = 0;
-
-        Coordinates startingCoordinates = findStartingCoordinates();
-        currentCoordinatesAndDirections = List.of(new ImmutablePair<>(startingCoordinates, Direction.INITIAL));
-        currentStepCount = 0;
-
-        solved = false;
-        solutionPath = new HashMap<>();
+        resetProgress(0); // Called to prevent possible null pointers
     }
 
     /**
@@ -71,35 +59,30 @@ public class Maze {
     }
 
     /**
-     * Checks if current step count is over the current limit
+     * Resets all progression tracking variables for the maze and sets a new maximum stpe limit.
      *
-     * @return true if current step count is over the current limit, false if not
+     * @param stepLimit New maximum step limit
      */
-    public boolean overCurrentLimit() {
-        return currentStepCount > LIMITS.get(stepLimitIndex);
+    public void resetProgress(int stepLimit) {
+        this.coordinatesCheckStatus = new boolean[height][width];
+        directionTracker = new Direction[height][width];
+        this.stepLimit = stepLimit;
+
+        Coordinates startingCoordinates = findStartingCoordinates();
+        currentCoordinatesAndDirections = List.of(new ImmutablePair<>(startingCoordinates, Direction.INITIAL));
+        currentStepCount = 0;
+
+        solved = false;
+        solutionPath = new HashMap<>();
     }
 
     /**
-     * Returns current step limit of the maze
-     * @return current step limit
-     */
-    public int getCurrentStepLimit() {
-        return LIMITS.get(stepLimitIndex);
-    }
-
-    /**
-     * Increases current limit unless the current limit is already at maximum
+     * Returns boolean based of if current step count is over the step limit.
      *
-     * @return true if limit was increased, false if not (limit was already at maximum)
+     * @return True if current step count is over the step limit, false otherwise.
      */
-    public boolean increaseCurrentLimit() {
-        if (stepLimitIndex >= LIMITS.size() - 1) {
-            return false;
-        }
-
-        stepLimitIndex++;
-
-        return true;
+    public boolean isOverStepLimit() {
+        return currentStepCount > stepLimit;
     }
 
     /**
@@ -254,6 +237,10 @@ public class Maze {
 
     public int getWidth() {
         return width;
+    }
+
+    public int getStepLimit() {
+        return stepLimit;
     }
 
     public List<Pair<Coordinates, Direction>> getCurrentCoordinatesAndDirections() {

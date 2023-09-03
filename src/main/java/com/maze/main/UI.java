@@ -51,13 +51,15 @@ public class UI {
                 }
 
                 Maze maze = MazeParser.parseMaze(input);
-                MazeSolver.solveMaze(maze);
-                String solutionPrintAscii = SolutionWriter.createSolutionAscii(maze, true);
-                printSolution(maze, solutionPrintAscii);
+                boolean solvable = MazeSolver.isMazeSolvable(maze);
 
-                if (solutionPrintAscii != null) {
+                if (solvable) {
+                    String solutionPrintAscii = SolutionWriter.createSolutionAscii(maze, true);
+                    printResult(maze, solutionPrintAscii);
                     String solutionFileAscii = SolutionWriter.createSolutionAscii(maze, false);
                     writeSolutionIntoFile(solutionFileAscii);
+                } else {
+                    printResult(maze, null);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -82,20 +84,23 @@ public class UI {
     }
 
     /**
-     * Prints given solution graphic + information about amount of steps required for the solution into the console.
+     * Prints the results of the maze solving.
+     * 
+     * If maze was solvable then given solution graphic + information about amount of steps required for the solution
+     * into the console.
      *
-     * If maze is unsolved and/or solution ascii is null then prints message stating that the maze was not solvable
+     * If maze was unsolved and/or solution ascii is null then prints message stating that the maze was not solvable
      * within the maximum limit.
      *
      * @param maze not null
      * @param solutionGraphic ASCII graphic to be printed if maze was solved.
      */
-    private static void printSolution(Maze maze, String solutionGraphic)  {
+    private static void printResult(Maze maze, String solutionGraphic)  {
         if (maze == null) {
             throw new NullPointerException("Maze must not be null in order for the solution to be printed");
         }
 
-        int stepLimit = maze.getCurrentStepLimit();
+        int stepLimit = maze.getStepLimit();
 
         if (maze.isSolved() && solutionGraphic != null) {
             System.out.println("Maze was solvable within " + stepLimit + " steps");

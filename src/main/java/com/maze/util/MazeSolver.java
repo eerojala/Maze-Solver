@@ -9,41 +9,57 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class MazeSolver {
+    private static final List<Integer> LIMITS = List.of(20, 150, 200);
+
     private MazeSolver() {
         // Private empty constructor for static method class
+    }
+
+    /**
+     * Returns boolean value if maze was solvable within limits of 20, 150 or 200.
+     *
+     * @param maze Maze to be solved.
+     * @return True if maze was able to be solved within 20, 150 or 200 steps, false otherwise.
+     */
+    public static boolean isMazeSolvable(Maze maze) {
+        for (int limit : LIMITS) {
+            maze.resetProgress(limit);
+            boolean solvableWithinLimit = solveMaze(maze);
+
+            if (solvableWithinLimit) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
      * The main Maze solving algorithm, designed to run recursively.
      *
      * Logic is that starting from the starting Coordinates each adjacent Coordinates will be marked as tried as well
-     * as their direction from the original Starting coordinate.
-     * The process will then be repeated for each of these adjacent Coordinates, and further on their adjacent
-     * Coordinates, and so on, until an exit has been found or all of the tiles have been checked.
+     * as their direction from the original Starting coordinate. The process will then be repeated for each of these
+     * adjacent Coordinates, and further on their adjacent Coordinates, and so on, until an exit has been found or all
+     * of the tiles have been checked or the maximum step limit has been reached.
      *
-     * The algorithm also keeps track of the distance to the starting Coordinates from the current iteration of
-     * Coordinates. If the distance increases over the maximum limit (currently hardcoded as 200), the method will
-     * cut off prematurely and thus being unable to find an exit. Along with the maximum limit there are also prior
-     * sub-limits (currently hardcoded as 20 and 150) which will be displayed in the result print if an exit was able
-     * to be found within that sub-limit (or the maximum limit if an exit was not able to be found within the sub-limits
-     * but was able to be found within the maximum limit)
-     *
-     * If an exit was able to be found within the maximum limit, the Maze will be marked as solved
+     * If an exit was able to be found within the maximum step limit, the Maze will be marked as solved
      * (maze.IsSolved() == true) and the Coordinates as well as the Directions taken for the successful exit path will
      * be saved into the Maze (maze.getSolutionPath).
      *
-     * If an exit was unable to be found within the maximum limit, the method will exit without modifying the Maze
+     * If an exit was unable to be found within the maximum step limit, the method will exit without modifying the Maze
      * solved -flag or the solution path.
      *
      * @param maze not null
+     * @return True if an exit was found within the maximum step limit (either in current or further recursions),
+     *         false otherwise.
      */
-    public static void solveMaze(Maze maze) {
+    private static boolean solveMaze(Maze maze) {
         if (maze == null) {
             throw new NullPointerException("Solvable maze cannot be null");
         }
 
-        if (isStepCountOverMaxLimit(maze)) {
-            return;
+        if (maze.isOverStepLimit()) {
+            return false;
         }
 
         Coordinates exitCoordinates = markCurrentStepCountsAndDirections(maze);
@@ -53,37 +69,16 @@ public class MazeSolver {
 
             if (maze.getCurrentCoordinatesAndDirections().isEmpty()) {
                 // Could not find any more traversable coordinates;
-                return;
+                return false;
             }
 
-            solveMaze(maze);
+            return solveMaze(maze);
         } else {
             maze.setSolved(true);
             markSolution(maze, exitCoordinates, null);
+
+            return true;
         }
-    }
-
-    /**
-     * Checks if the current step count is over the maximum limit.
-     * Method flow:
-     *
-     * 1. Return false if current step count is below or the same as the current Maze step limit
-     * 2. If did not return in previous step then try to increment the current limit to the next sub-limit
-     * 3. If was able to increase the current limit to the next sub-limit, return back to step 1.
-     * 4. If was unable to increase the current limit to the next sub-limit (i.e. the the current limit is the maximum
-     *    limit), return true
-     *
-     * @param maze current Maze in the solving algorithm
-     * @return true if current step count is over the maximum limit, false if not
-     */
-    private static boolean isStepCountOverMaxLimit(Maze maze) {
-        if (!maze.overCurrentLimit()) {
-            return false;
-        }
-
-        boolean limitIncremented = maze.increaseCurrentLimit();
-
-        return !limitIncremented || isStepCountOverMaxLimit(maze);
     }
 
     /**
