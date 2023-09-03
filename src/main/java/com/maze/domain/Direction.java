@@ -1,10 +1,10 @@
 package com.maze.domain;
 
 public enum Direction {
-    UP('↑', 'U',-1, 0),
-    RIGHT('→', 'R', 0, 1),
-    DOWN('↓', 'D', 1, 0),
-    LEFT('←', 'L', 0, -1),
+    UP('\u2191', 'U',-1, 0),
+    RIGHT('\u2192', 'R', 0, 1),
+    DOWN('\u2193', 'D', 1, 0),
+    LEFT('\u2190', 'L', 0, -1),
     // For the start of maze solving before any moves have been made
     INITIAL('X', 'X',0, 0);
 

@@ -1,9 +1,7 @@
 package com.maze.main;
 
 import com.maze.domain.Maze;
-import com.maze.util.MazeParser;
-import com.maze.util.MazeSolver;
-import com.maze.util.SolutionWriter;
+import com.maze.util.*;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
