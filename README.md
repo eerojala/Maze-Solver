@@ -8,7 +8,7 @@ A small Java 11 application for solving mazes parsed from text files.
 Must have a Java development kit (JDK) and a Java runtime environment (JRE) installed in your computer (Java version 11 or above)
 
 Instructions:
-1. Download the release zip from this repository: https://github.com/eerojala/Maze-Solver/releases/tag/Relase
+1. Download a release zip from this repository: https://github.com/eerojala/Maze-Solver/releases
    * 1.0.2 for the updated version, 1.0 for the older version
 3. Unzip the folder anywhere you please
 4. Create/paste any maze text files in this folder you wish to solve (instructions below for file syntax)
