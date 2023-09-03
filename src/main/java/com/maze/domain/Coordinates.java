@@ -3,7 +3,8 @@ package com.maze.domain;
 import java.util.Objects;
 
 /**
- * Wrapper for coordinates so don't have to use verbose AbstractMap.SimpleEntry.
+ * Wrapper for coordinates.
+ * Pretty integral part of the application so giving it a dedicated class instead of using Pair of Integers.
  */
 public class Coordinates {
     private final int y;

@@ -1,6 +1,8 @@
 package com.maze.util;
 
 import com.maze.domain.*;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Arrays;
 import java.util.List;
@@ -53,6 +55,7 @@ public class MazeSolver {
                 // Could not find any more traversable coordinates;
                 return;
             }
+
             solveMaze(maze);
         } else {
             maze.setSolved(true);
@@ -94,11 +97,11 @@ public class MazeSolver {
      * @return If any of the Coordinates is an exit, returns those Coordinates. Null otherwise.
      */
     private static Coordinates markCurrentStepCountsAndDirections(Maze maze) {
-        for (var cad : maze.getCurrentCoordinatesAndDirections()) {
-            Coordinates coordinates = cad.getCoordinates();
+        for (var pair : maze.getCurrentCoordinatesAndDirections()) {
+            Coordinates coordinates = pair.getLeft();
             maze.markCoordinatesAsChecked(coordinates);
 
-            Direction direction = cad.getDirection();
+            Direction direction = pair.getRight();
             maze.markDirectionForCoordinates(coordinates, direction);
 
             if (areExitCoordinates(maze, coordinates)) {
@@ -126,50 +129,49 @@ public class MazeSolver {
     }
 
     /**
-     * Returns a List of CoordinatesAndDirection objects of Coordinates adjacent to all of the current Coordinates as
+     * Returns a List of Pair<Coordinates, Directions> of Coordinates adjacent to all of the current Coordinates as
      * well their Directions from all of the current Coordinates.
      *
      * @param maze Current Maze in the solving algorithm.
-     * @return List of CoordinatesAndDirection objects of Coordinates adjacent to all of the current Coordinates as
-     *         well their Directions from all of the current Coordinates.
+     * @return List of Pairs of Coordinates adjacent to all of the current Coordinates as well their Directions from
+     *         all of the current Coordinates.
      */
-    private static List<CoordinatesAndDirection> getValidAdjacentCoordinatesAndDirections(Maze maze) {
+    private static List<Pair<Coordinates, Direction>> getValidAdjacentCoordinatesAndDirections(Maze maze) {
         return maze.getCurrentCoordinatesAndDirections().stream()
-                .map(CoordinatesAndDirection::getCoordinates)
+                .map(Pair::getLeft)
                 .map(c -> getValidAdjacentCoordinatesAndDirectionsForCoordinates(maze, c))
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
     }
 
     /**
-     * Returns a List of CoordinatesAndDirection objects of Coordinates adjacent to the given Coordinates as well as
+     * Returns a List of Pair<Coordinates, Direction> of Coordinates adjacent to the given Coordinates as well as
      * their Direction from the given Coordinates.
      * @param maze Current Maze in the solving algorithm
      * @param coordinates Coordinates.
-     * @return List of CoordinatesAndDirection objects of Coordinates adjacent to the given Coordinates as well as
+     * @return List of Pair<Coordinates, Direction> of Coordinates adjacent to the given Coordinates as well as
      *         their Direction from the given Coordinates.
      */
-    private static List<CoordinatesAndDirection> getValidAdjacentCoordinatesAndDirectionsForCoordinates(
+    private static List<Pair<Coordinates, Direction>> getValidAdjacentCoordinatesAndDirectionsForCoordinates(
             Maze maze, Coordinates coordinates) {
         return Arrays.stream(Direction.MOVING_DIRECTIONS)
                 .map(d -> createAdjacentCoordinatesAndDirection(coordinates, d))
-                .filter(cad -> areCoordinatesValid(maze, cad.getCoordinates()))
+                .filter(pair -> areCoordinatesValid(maze, pair.getLeft()))
                 .collect(Collectors.toList());
     }
 
     /**
-     * Creates a new CoordinatesAndDirection object of the given Direction as well as the adjacent Coordinates from the
-     * given Direction of the given Coordinates.
-     * @param coordinates Coordinates.
-     * @param direction Direction which will be included in the created CoordinatesAndDirection object and to get the
-     *                  adjacent Coordinates from the given Coordinates (which will be then also included in the created
-     *                  CoordinatesAndDirection object)
-     * @return a new CoordinatesAndDirection object of the given Direction as well as the adjacent Coordinates from the
-     *         given Direction of the given Coordinates.
+     * Creates a new ImmutablePair<Coordinates, Directions> object of the given Direction as well as the adjacent
+     * Coordinates from the given Direction of the given Coordinates.
+     * @param coordinates Coordinates from which the adjacent Coordinates will be created from
+     * @param direction Direction which will be included in the created Pair  and to get the adjacent Coordinates from
+     *                  the given Coordinates (which will be then also included in the created Pair object)
+     * @return a new ImmutablePair<Coordinates, Directions>  object of the given Direction as well as the adjacent
+     *         Coordinates from the given Direction of the given Coordinates.
      */
-    private static CoordinatesAndDirection createAdjacentCoordinatesAndDirection(
+    private static Pair<Coordinates, Direction> createAdjacentCoordinatesAndDirection(
             Coordinates coordinates, Direction direction) {
-        return new CoordinatesAndDirection(Direction.getNextCoordinates(direction, coordinates), direction);
+        return new ImmutablePair<>(Direction.getNextCoordinates(direction, coordinates), direction);
     }
 
     /**
@@ -227,28 +229,28 @@ public class MazeSolver {
      * #^#####
      *
      * @param maze Current Maze in the solving algorithm.
-     * @param coordinates Coordinates part of the solution path.
+     * @param currentCoordinates Current coordinates when traversing through the solution path
      * @param previousDirection Direction pointing towards the next Coordinates in the solution path (NOTE: the param
      *                          is named previousDirection because the method is traversing the solution path backwards
      *                          from the exit back to the entrance).
      */
-    private static void markSolution(Maze maze, Coordinates coordinates, Direction previousDirection) {
-        if (maze.getTileForCoordinates(coordinates) == Tile.START) {
+    private static void markSolution(Maze maze, Coordinates currentCoordinates, Direction previousDirection) {
+        if (maze.getTileForCoordinates(currentCoordinates) == Tile.START) {
             return;
         }
 
         if (previousDirection != null) {
-            maze.updateSolutionPath(coordinates, previousDirection);
+            maze.updateSolutionPath(currentCoordinates, previousDirection);
         }
 
-        Direction currentDirection = maze.getDirectionForCoordinates(coordinates);
+        Direction currentDirection = maze.getDirectionForCoordinates(currentCoordinates);
         /*
          * NOTE: This method is traversing the solution path backwards, from the exit back to the entrance.
          * Therefore the variables are named "previousDirection" and "nextCoordinates" to reflect the method traversal
          * order (if we were traversing the solution path from the entrance they would be referred to as "nextDirection"
          * and "previousCoordinates" respectively) and not the actual solution path order.
          */
-        Coordinates nextCoordinates = Direction.getPreviousCoordinates(currentDirection, coordinates);
+        Coordinates nextCoordinates = Direction.getPreviousCoordinates(currentDirection, currentCoordinates);
         markSolution(maze, nextCoordinates, currentDirection);
     }
 }

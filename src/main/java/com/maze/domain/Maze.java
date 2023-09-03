@@ -1,5 +1,8 @@
 package com.maze.domain;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+
 import java.util.*;
 
 public class Maze {
@@ -16,7 +19,7 @@ public class Maze {
     private int stepLimitIndex;
 
     // Current progression iteration tracking related fields
-    private List<CoordinatesAndDirection> currentCoordinatesAndDirections;
+    private List<Pair<Coordinates, Direction>> currentCoordinatesAndDirections;
     private int currentStepCount;
 
     // Solution related fields
@@ -28,13 +31,12 @@ public class Maze {
         height = maze.length;
         width = maze[0].length;
 
-
         this.coordinatesCheckStatus = new boolean[height][width];
         directionTracker = new Direction[height][width];
         stepLimitIndex = 0;
 
         Coordinates startingCoordinates = findStartingCoordinates();
-        currentCoordinatesAndDirections = List.of(new CoordinatesAndDirection(startingCoordinates, Direction.INITIAL));
+        currentCoordinatesAndDirections =  List.of(new ImmutablePair<>(startingCoordinates, Direction.INITIAL));
         currentStepCount = 0;
 
         solved = false;
@@ -254,11 +256,11 @@ public class Maze {
         return width;
     }
 
-    public List<CoordinatesAndDirection> getCurrentCoordinatesAndDirections() {
+    public List<Pair<Coordinates, Direction>> getCurrentCoordinatesAndDirections() {
         return currentCoordinatesAndDirections;
     }
 
-    public void setCurrentCoordinatesAndDirections(List<CoordinatesAndDirection> currentCoordinatesAndDirections) {
+    public void setCurrentCoordinatesAndDirections(List<Pair<Coordinates, Direction>> currentCoordinatesAndDirections) {
         this.currentCoordinatesAndDirections = currentCoordinatesAndDirections;
     }
 
