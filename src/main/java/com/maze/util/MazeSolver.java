@@ -149,7 +149,7 @@ public class MazeSolver {
      */
     private static List<Pair<Coordinates, Direction>> getValidAdjacentCoordinatesAndDirectionsForCoordinates(
             Maze maze, Coordinates coordinates) {
-        return Arrays.stream(Direction.MOVING_DIRECTIONS)
+        return Arrays.stream(Direction.values())
                 .map(d -> createAdjacentCoordinatesAndDirection(coordinates, d))
                 .filter(pair -> areCoordinatesValid(maze, pair.getLeft()))
                 .collect(Collectors.toList());
