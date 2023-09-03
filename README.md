@@ -17,7 +17,7 @@ Instructions:
 6. Run `java -jar Maze-Solver.jar` in order to start the application
    * `java -jar Maze-Solver-1.0.2.jar` for version 1.0.2
 8. When the application is running type the name of the file you wish to solve (or path to the file if it is not located in the same folder root as the jar file)
-9. If the maze was able to be parsed/solved then the solution will be printed into the console and also written to a txt file which will be created in the same folder as the jar file
+9. If the maze was able to be parsed/solved within 200 steps then the solution will be printed into the console and also written to a txt file which will be created in the same folder as the jar file
    * NOTE: In the older version the solution console print will contain unicode arrow characters (`↑`, `→`, `↓`, `←`) which might not be able to be printed correctly at least in Windows 10. However the solution txt file is encoded in UTF-8 so they should be visible there. The newer version will use single letters to represent the directions (`U`, `R`, `D`, `L`) in the console print. The file output still uses the unicode arrow characters.
 10. To exit the program enter `x` or `X`
 
