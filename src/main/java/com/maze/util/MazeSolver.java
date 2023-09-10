@@ -16,22 +16,34 @@ public class MazeSolver {
     }
 
     /**
-     * Returns boolean value if maze was solvable within limits of 20, 150 or 200.
+     * Attempts to solve the given maze within limits of 20, 150 or 200.
+     * See method solveMaze for the actual solving algorithm.
      *
-     * @param maze Maze to be solved.
-     * @return True if maze was able to be solved within 20, 150 or 200 steps, false otherwise.
+     * Will mark maze.solutionStatus as one of the following depending on solving result:
+     *      SolutionStatus.SUCCESS if maze was solvable within any of the limits
+     *      SolutionStatus.FAILURE if maze was unsolvable within the max limit of 200
+     *      SolutionStatus.ERROR if any error occurred during the maze solving (+ also prints the error message)
+     *
+     * @param maze Maze to be solved, not null
      */
-    public static boolean isMazeSolvable(Maze maze) {
-        for (int limit : LIMITS) {
-            maze.resetProgress(limit);
-            boolean solvableWithinLimit = solveMaze(maze);
-
-            if (solvableWithinLimit) {
-                return true;
-            }
+    public static void attemptToSolveMaze(Maze maze) {
+        if (maze == null) {
+            throw new NullPointerException("Solvable maze cannot be null");
         }
 
-        return false;
+        try {
+            for (int limit : LIMITS) {
+                maze.resetProgress(limit);
+                boolean solvableWithinLimit = solveMaze(maze);
+
+                if (solvableWithinLimit) {
+                    return;
+                }
+            }
+        } catch (Exception e) {
+            maze.setSolutionStatus(SolutionStatus.ERROR);
+            Printer.println("The following error occurred during maze solving: " + e.getMessage());
+        }
     }
 
     /**
@@ -49,15 +61,11 @@ public class MazeSolver {
      * If an exit was unable to be found within the maximum step limit, the method will exit without modifying the Maze
      * solved -flag or the solution path.
      *
-     * @param maze not null
+     * @param maze the maze to be solved
      * @return True if an exit was found within the maximum step limit (either in current or further recursions),
      *         false otherwise.
      */
     private static boolean solveMaze(Maze maze) {
-        if (maze == null) {
-            throw new NullPointerException("Solvable maze cannot be null");
-        }
-
         if (maze.isOverStepLimit()) {
             return false;
         }
@@ -74,7 +82,7 @@ public class MazeSolver {
 
             return solveMaze(maze);
         } else {
-            maze.setSolved(true);
+            maze.setSolutionStatus(SolutionStatus.SUCCESS);
             markSolution(maze, exitCoordinates, null);
 
             return true;
@@ -196,9 +204,9 @@ public class MazeSolver {
      * The solution path is found by checking from which Direction were the current Coordinates arrived from the
      * previous Coordinates, and then going forward opposite of that Direction, repeating until the entrance is found.
      *
-     * The solution path is marked in a HashMap<Coordinates, Direction> each solution path Coordinates are a key paired
-     * with the Direction POINTING TOWARDS THE NEXT COORDINATES in the solution Path. This is done so that the solution
-     * path print will be easier to look at.
+     * The solution path is marked in a HashMap<Coordinates, Direction> where each solution path Coordinates are a key
+     * paired with the Direction POINTING TOWARDS THE NEXT COORDINATES in the solution Path. This is done so that the
+     * solution path print will be easier to look at.
      *
      * E.g. if we have a simple maze like this
      *
@@ -216,7 +224,7 @@ public class MazeSolver {
      * #^#####
      *
      * But since we use the Directions pointing towards the next Coordinates in the solution path, the result path is
-     * much easier to look at (at least in my opinion):
+     * much more intuitive to look at (at least in my opinion):
      *
      * #######
      * #→→↓#→E

@@ -3,7 +3,9 @@ package com.maze.util;
 import com.maze.domain.Coordinates;
 import com.maze.domain.Direction;
 import com.maze.domain.Maze;
+import com.maze.domain.SolutionStatus;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -25,7 +27,7 @@ public class SolutionWriter {
      * @return ASCII graphic String of the solution. If given Maze is null or unsolved then null.
      */
     public static String createSolutionAscii(Maze maze, boolean forPrint) {
-        if (maze == null || !maze.isSolved()) {
+        if (maze == null || maze.getSolutionStatus() != SolutionStatus.SUCCESS) {
             return null;
         }
 
@@ -36,7 +38,9 @@ public class SolutionWriter {
                 stringBuilder.append(getCharForCoordinates(maze, new Coordinates(y, x), forPrint));
             }
 
-            stringBuilder.append("\n");
+            if (y < maze.getHeight() - 1) {
+                stringBuilder.append("\n"); // No newline for final line
+            }
         }
 
         return stringBuilder.toString();
@@ -83,20 +87,24 @@ public class SolutionWriter {
      * Returns the file name if write operation was successful.
      *
      * @param solutionGraphic ASCII graphic to be written to the file.
-     * @return Generated filename for the written file. Should never be null.
-     * @throws Exception caused by writing into the file
+     * @return Generated filename for the written file if file writing was successful, null otherwise.
+     * @throws IOException caused by IOUtil.close
      */
-    public static String writeSolutionGraphicIntoTextFile(String solutionGraphic) throws Exception {
+    public static String writeSolutionGraphicIntoTextFile(String solutionGraphic) throws IOException {
         String filename = "solution-" + getCurrentTimeString() + ".txt";
-        PrintWriter writer = null;
+        PrintWriter writer =  new PrintWriter(filename, StandardCharsets.UTF_8);
 
         try {
             writer = new PrintWriter(filename, StandardCharsets.UTF_8);
             writer.write(solutionGraphic);
 
             return filename;
+        } catch (IOException e) {
+            Printer.println("Was unable write the solution to file " + filename);
+
+            return null;
         } finally {
-            closeWriter(writer);
+            IOUtil.close(writer);
         }
     }
 
@@ -107,15 +115,5 @@ public class SolutionWriter {
     private static String getCurrentTimeString() {
         String regex = "[:.]"; // ':' or '.'
         return LocalDateTime.now().toString().replaceAll(regex, "-");
-    }
-
-    /**
-     * Closes given PrintWriter if it is not null
-     * @param writer PrintWriter used for writing the solution ASCII graphic into a text file.
-     */
-    private static void closeWriter(PrintWriter writer) {
-        if (writer != null) {
-            writer.close();
-        }
     }
 }

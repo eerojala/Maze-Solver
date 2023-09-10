@@ -21,7 +21,7 @@ public class Maze {
     private int currentStepCount;
 
     // Solution related fields
-    private boolean solved;
+    private SolutionStatus solutionStatus;
     private Map<Coordinates, Direction> solutionPath;
 
     public Maze(Tile[][] maze) {
@@ -72,7 +72,7 @@ public class Maze {
         currentCoordinatesAndDirections = List.of(new ImmutablePair<>(startingCoordinates, null));
         currentStepCount = 0;
 
-        solved = false;
+        solutionStatus = SolutionStatus.FAILURE;
         solutionPath = new HashMap<>();
     }
 
@@ -259,11 +259,11 @@ public class Maze {
         this.currentStepCount = currentStepCount;
     }
 
-    public boolean isSolved() {
-        return solved;
+    public SolutionStatus getSolutionStatus() {
+        return solutionStatus;
     }
 
-    public void setSolved(boolean solved) {
-        this.solved = solved;
+    public void setSolutionStatus(SolutionStatus solutionStatus) {
+        this.solutionStatus = solutionStatus;
     }
 }
