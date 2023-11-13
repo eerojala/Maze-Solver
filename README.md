@@ -7,14 +7,14 @@ If you want to pull and compile the code yourself then you will also need a Java
 
 Instructions:
 1. Download a release zip from this repository: https://github.com/eerojala/Maze-Solver/releases
-3. Unzip the folder anywhere you please
-4. Create/paste any maze text files in this folder you wish to solve (instructions below for file syntax)
+2. Unzip the folder anywhere you please
+3. Create/paste any maze text files in this folder you wish to solve (instructions below for file syntax)
    * The release zip file comes with 2 ready-made maze text files
-5. Open a command line and navigate to the unzipped folder
-6. Run `java -jar jarname` in order to start the application, where `jarname` is the name of the jar file you downloaded (e.g. `Maze-Solver-1.0.3.jar`)
-8. When the application is running type the name of the file you wish to solve (or path to the file if it is not located in the same folder root as the jar file)
-9. If the maze was able to be parsed/solved within 200 steps then the solution will be printed into the console and also written to a txt file which will be created in the same folder as the jar file
-10. To exit the program write and enter either `x` or `X`
+4. Open a command line and navigate to the unzipped folder
+5. Run `java -jar jarname` in order to start the application, where `jarname` is the name of the jar file you downloaded (e.g. `Maze-Solver-1.0.3.jar`)
+6. When the application is running type the name of the file you wish to solve (or path to the file if it is not located in the same folder root as the jar file)
+7. If the maze was able to be parsed/solved within 200 steps then the solution will be printed into the console and also written to a txt file which will be created in the same folder as the jar file
+8. To exit the program write and enter either `x` or `X`
 
 Maze file syntax:
 1. The fle must be a text file e.g. `.txt`, `.md`
